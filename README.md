@@ -4,30 +4,42 @@ Strom is an open source application that allows charge point owners to accept li
 
 ```mermaid
 stateDiagram
-    direction LR
     evse1: charge point 1
     evse2: charge point 2
     evse3: charge point 3
+    qr: qr code
     wallet: ln wallet
-    
+    web: web
+
+    [*] --> qr
+    qr --> web
+    qr --> wallet
+    web --> wallet
+    wallet --> strom: LNURL-(p/w)
+
     [*] --> nostr
     nostr --> strom: zap 
     strom --> evse1: OCPP
     strom --> evse2: OCPP
     strom --> evse3: OCPP
-    evse1 --> [*]: start charge
-
-    [*] --> wallet
-    wallet --> strom: LNURL-p
+    evse1 --> [*]: start/stop charge
 ```
 
-Each charge point added to Strom is configured with a unique nostr identity and [LNURL-p](https://github.com/lnurl/luds/blob/luds/06.md) address. A [static internet identifier](https://github.com/lnurl/luds/blob/luds/16.md) (lightning address) could also be configured. The LNURL-p address could then be advertised on the charge point in the form of a QR code or lightning address.
+Each charge point added to Strom is configured with a unique [nostr](https://github.com/nostr-protocol/nostr) identity and [LNURL friendly](https://github.com/lnurl/luds/blob/luds/01.md#fallback-scheme) URL address. A [static internet identifier](https://github.com/lnurl/luds/blob/luds/16.md) (lightning address) could also be configured to initiate a charge. The LNURL friendly address could then be advertised on the charge point in the form of a QR code or lightning address. The address is formatted as a URI scheme that includes the LNURL as a query parameter and is otherwise a fallback URL to a web page.
 
-[Zapping](https://github.com/nostr-protocol/nips/blob/master/57.md) the nostr identity or making a payment to the LNURL-p/lightning address would initiate a charging session over OCPP, locking the cable and initiating communication with the vehicle.
+The URL encoded in the LNURL address will return a [LNURL-p](https://github.com/lnurl/luds/blob/luds/06.md) or [LNURL-w](https://github.com/lnurl/luds/blob/luds/03.md) depending on if the charge point state is either AVAILABLE or CHARGING. 
+
+Making a payment to the LNURL-p would initiate a charging session over OCPP, locking the cable and initiating communication with the vehicle. As part of the LNURL-p payment flow, Strom returns a [success action](https://github.com/lnurl/luds/blob/luds/09.md) with message and URL to view the session via a web page. 
+
+When stopping the charge via LNURL-w, Strom needs to ensure that the initiator is the same as the LNURL-p payment so that someone else cannot stop the charge process or steal funds. Any prepaid amount that has not been consumed by charging can be refunded.
+
+### nostr
+
+[Zapping](https://github.com/nostr-protocol/nips/blob/master/57.md) the nostr identity could would initiate a charging session in the same way as described above, as zapping is an extended LNURL-p flow.
 
 As the state of the charge point changes from AVAILABLE to CHARGING, this status could be broadcast to a nostr relay as a [NIP-33 Replaceable Event](https://github.com/nostr-protocol/nips/blob/master/33.md).
 
-If the session is initiated on nostr, details of the session could also be sent to the initiator via [NIP-04 Direct Message](https://github.com/nostr-protocol/nips/blob/master/04.md). This information could include the state of charge, session events, kWs charged and even prompt to continue charging with a follow-up zap.
+Details of the session could also be sent to the initiator via [NIP-04 Direct Message](https://github.com/nostr-protocol/nips/blob/master/04.md). This information could include the state of charge, session events, kWs charged and even prompt to continue charging with a follow-up zap. Also as a Direct Message the LNURL-w URL could be shared to stop the charge.
 
 ### Charge Point Requirements
 
