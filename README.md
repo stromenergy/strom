@@ -35,11 +35,11 @@ When stopping the charge via LNURL-w, Strom needs to ensure that the initiator i
 
 ### nostr
 
-[Zapping](https://github.com/nostr-protocol/nips/blob/master/57.md) the nostr identity could would initiate a charging session in the same way as described above, as zapping is an extended LNURL-p flow.
+A charge point would appear as an identity on nostr, possibly with profile information and branding. The physical and addressable location of the charge point could be advertised using [NIP-44 Geospatial Types](https://github.com/rossbates/nips/blob/master/44.md) to pinpoint the exact location.  As the state of the charge point changes from AVAILABLE to CHARGING, this status could be broadcast to a nostr relay as a [NIP-33 Replaceable Event](https://github.com/nostr-protocol/nips/blob/master/33.md).
 
-As the state of the charge point changes from AVAILABLE to CHARGING, this status could be broadcast to a nostr relay as a [NIP-33 Replaceable Event](https://github.com/nostr-protocol/nips/blob/master/33.md).
+[Zapping](https://github.com/nostr-protocol/nips/blob/master/57.md) the nostr identity would initiate a charging session in the same way as described above, as zapping is an extended LNURL-p flow.
 
-Details of the session could also be sent to the initiator via [NIP-04 Direct Message](https://github.com/nostr-protocol/nips/blob/master/04.md). This information could include the state of charge, session events, kWs charged and even prompt to continue charging with a follow-up zap. Also as a Direct Message the LNURL-w URL could be shared to stop the charge.
+Details of the session could also be sent to the initiator via [NIP-04 Direct Message](https://github.com/nostr-protocol/nips/blob/master/04.md). This information could include the state of charge, session events, kWs charged and even prompt to continue charging with a follow-up zap. Also as a direct message the LNURL-w URL could be shared to stop the charge.
 
 ### Charge Point Requirements
 
