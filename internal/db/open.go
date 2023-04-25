@@ -37,6 +37,7 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 			log.Debug().Msg("Creating user")
 
 			if err = createUser(defaultDatabase, username, password); err != nil {
+				log.Error().Msg("STR004: Error creating user")
 				return nil, err
 			}
 		}
@@ -51,7 +52,7 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 			log.Debug().Msg("Creating database")
 
 			if err = createDatabase(defaultDatabase, name, username); err != nil {
-				log.Error().Msg("STR0xxx: Error creating database")
+				log.Error().Msg("STR005: Error creating database")
 				return nil, err
 			}
 		}
@@ -59,7 +60,7 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 		database, err = sqlx.Connect("postgres", dataSourceName)
 
 		if err != nil {
-			log.Error().Msg("STR004: Error connecting to database")
+			log.Error().Msg("STR006: Error connecting to database")
 			return nil, err
 		}
 	}
@@ -69,13 +70,13 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 
 func createDatabase(db *sqlx.DB, name, username string) (err error) {
 	if _, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s;", name)); err != nil {
-		log.Error().Msg("STR0xxx: Error creating database")
-		return errors.Wrapf(err, "STR005: Error creating database")
+		log.Error().Msg("STR007: Error creating database")
+		return errors.Wrapf(err, "Error creating database")
 	}
 
 	if _, err = db.Exec(fmt.Sprintf("GRANT ALL PRIVILEGES ON DATABASE %s TO %s;", name, username)); err != nil {
-		log.Error().Msg("STR0xxx: Error granting database privilages")
-		return errors.Wrapf(err, "STR006: Error granting database privilages")
+		log.Error().Msg("STR008: Error granting database privilages")
+		return errors.Wrapf(err, "Error granting database privilages")
 	}
 
 	return nil
@@ -83,7 +84,8 @@ func createDatabase(db *sqlx.DB, name, username string) (err error) {
 
 func createUser(db *sqlx.DB, username, password string) error {
 	if _, err := db.Exec(fmt.Sprintf("CREATE USER %s WITH ENCRYPTED PASSWORD '%s';", username, password)); err != nil {
-		return errors.Wrapf(err, "STR007: Error creating user in default database")
+		log.Error().Msg("STR009: Error creating user in default database")
+		return errors.Wrapf(err, "Error creating user in default database")
 	}
 
 	return nil
@@ -93,7 +95,8 @@ func hasDatabase(db *sqlx.DB, name string) (bool, error) {
 	var hasDatabase bool
 
 	if err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = $1);", name).Scan(&hasDatabase); err != nil {
-		return false, errors.Wrap(err, "STR008: Error checking database exists")
+		log.Error().Msg("STR010: Error checking database exists")
+		return false, errors.Wrap(err, "Error checking database exists")
 	}
 
 	return hasDatabase, nil
@@ -103,7 +106,8 @@ func hasUser(db *sqlx.DB, username string) (bool, error) {
 	var hasUser bool
 
 	if err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM pg_roles WHERE rolname = $1);", username).Scan(&hasUser); err != nil {
-		return false, errors.Wrap(err, "STR009: Error checking user exists in default database")
+		log.Error().Msg("STR011: Error checking user exists in default database")
+		return false, errors.Wrap(err, "Error checking user exists in default database")
 	}
 
 	return hasUser, nil

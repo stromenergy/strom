@@ -14,21 +14,21 @@ func Migrate(db *sql.DB) error {
 	sourceInstance, err := migrations.GetMigrationSourceInstance()
 
 	if err != nil {
-		log.Error().Msg("STR010: Error getting migrations source")
+		log.Error().Msg("STR012: Error getting migrations source")
 		return errors.Wrap(err, "Error getting migrations source")
 	}
 
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 
 	if err != nil {
-		log.Error().Msg("STR011: Error getting migrations driver")
+		log.Error().Msg("STR013: Error getting migrations driver")
 		return errors.Wrap(err, "Error getting migrations driver")
 	}
 
 	m, err := migrate.NewWithInstance("httpfs", sourceInstance, "postgres", driver)
 
 	if err != nil {
-		log.Error().Msg("STR012: Error getting migrations instance")
+		log.Error().Msg("STR014: Error getting migrations instance")
 		return errors.Wrap(err, "Error getting migrations instance")
 	}
 
@@ -38,7 +38,7 @@ func Migrate(db *sql.DB) error {
 	errDirty, isErr := err.(migrate.ErrDirty)
 
 	if err != nil && err != migrate.ErrNoChange && err != migrate.ErrNilVersion && err != migrate.ErrLocked && !isErr {
-		log.Error().Msg("STR013: Error running migration")
+		log.Error().Msg("STR015: Error running migration")
 		return errors.Wrap(err, "Error running migration")
 	}
 
@@ -46,14 +46,14 @@ func Migrate(db *sql.DB) error {
 		log.Debug().Msg("Retrying migration")
 		
 		if err = m.Force(errDirty.Version - 1); err != nil {
-			log.Error().Msg("STR014: Error forcing rollback of migration")
+			log.Error().Msg("STR016: Error forcing rollback of migration")
 			return errors.Wrap(err, "Error forcing rollback of migration")
 		}
 
 		err = m.Up()
 
 		if err != nil && err != migrate.ErrNoChange && err != migrate.ErrNilVersion && err != migrate.ErrLocked {
-			log.Error().Msg("STR015: Error in migration after retry")
+			log.Error().Msg("STR017: Error in migration after retry")
 			return errors.Wrap(err, "Error in migration after retry")
 		}
 	}

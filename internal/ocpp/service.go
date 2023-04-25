@@ -7,19 +7,19 @@ import (
 	"github.com/stromenergy/strom/internal/db"
 )
 
-type Ocpp interface {
-	Start(context.Context, *sync.WaitGroup)
+type OcppInterface interface {
+	Start(shutdownCtx context.Context,waitGroup  *sync.WaitGroup)
 }
 
-type OcppService struct {
+type Ocpp struct {
 	repository *db.Repository
 }
 
-func NewService(repository *db.Repository) Ocpp {
-	return &OcppService{
+func NewService(repository *db.Repository) OcppInterface {
+	return &Ocpp{
 		repository: repository,
 	}
 }
 
-func (s *OcppService) Start(shutdownCtx context.Context, waitGroup *sync.WaitGroup) {
+func (s *Ocpp) Start(shutdownCtx context.Context, waitGroup *sync.WaitGroup) {
 }

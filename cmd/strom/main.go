@@ -13,7 +13,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/build"
 	"github.com/stromenergy/strom/internal/db"
-	"github.com/stromenergy/strom/internal/ocpp"
+	"github.com/stromenergy/strom/internal/rest"
+	"github.com/stromenergy/strom/internal/service"
 	"github.com/urfave/cli/v2"
 	"github.com/urfave/cli/v2/altsrc"
 )
@@ -37,6 +38,14 @@ func main() {
 			Aliases: []string{"c"},
 			Usage:   "Path to config file",
 		},
+		// Application
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "Application",
+			EnvVars: []string{"APP_PORT"},
+			Name:  "strom.port",
+			Value: "6102",
+			Usage: "Port of the API",
+		}),
 		// Logging
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Category: "Logging",
@@ -135,8 +144,11 @@ func main() {
 			shutdownCtx, cancelFunc := context.WithCancel(context.Background())
 			waitGroup := &sync.WaitGroup{}
 
-			ocppService := ocpp.NewService(repository)
-			ocppService.Start(shutdownCtx, waitGroup)
+			services := service.NewService(repository)
+			services.Start(shutdownCtx, waitGroup)
+
+			restService := rest.NewService(repository, services)
+			restService.Start(ctx.String("strom.port"), shutdownCtx, waitGroup)
 
 			// Handle shutdown
 			sigtermChan := make(chan os.Signal, 1)
