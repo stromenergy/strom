@@ -1,0 +1,1 @@
+go run ./cmd/strom --log.text --log.level debug start
