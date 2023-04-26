@@ -8,27 +8,28 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/database/migrations"
+	"github.com/stromenergy/strom/internal/util"
 )
 
 func Migrate(db *sql.DB) error {
 	sourceInstance, err := migrations.GetMigrationSourceInstance()
 
 	if err != nil {
-		log.Error().Msg("STR012: Error getting migrations source")
+		util.LogError("STR012: Error getting migrations source", err)
 		return errors.Wrap(err, "Error getting migrations source")
 	}
 
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 
 	if err != nil {
-		log.Error().Msg("STR013: Error getting migrations driver")
+		util.LogError("STR013: Error getting migrations driver", err)
 		return errors.Wrap(err, "Error getting migrations driver")
 	}
 
 	m, err := migrate.NewWithInstance("httpfs", sourceInstance, "postgres", driver)
 
 	if err != nil {
-		log.Error().Msg("STR014: Error getting migrations instance")
+		util.LogError("STR014: Error getting migrations instance", err)
 		return errors.Wrap(err, "Error getting migrations instance")
 	}
 
@@ -38,7 +39,7 @@ func Migrate(db *sql.DB) error {
 	errDirty, isErr := err.(migrate.ErrDirty)
 
 	if err != nil && err != migrate.ErrNoChange && err != migrate.ErrNilVersion && err != migrate.ErrLocked && !isErr {
-		log.Error().Msg("STR015: Error running migration")
+		util.LogError("STR015: Error running migration", err)
 		return errors.Wrap(err, "Error running migration")
 	}
 
@@ -46,14 +47,14 @@ func Migrate(db *sql.DB) error {
 		log.Debug().Msg("Retrying migration")
 		
 		if err = m.Force(errDirty.Version - 1); err != nil {
-			log.Error().Msg("STR016: Error forcing rollback of migration")
+			util.LogError("STR016: Error forcing rollback of migration", err)
 			return errors.Wrap(err, "Error forcing rollback of migration")
 		}
 
 		err = m.Up()
 
 		if err != nil && err != migrate.ErrNoChange && err != migrate.ErrNilVersion && err != migrate.ErrLocked {
-			log.Error().Msg("STR017: Error in migration after retry")
+			util.LogError("STR017: Error in migration after retry", err)
 			return errors.Wrap(err, "Error in migration after retry")
 		}
 	}

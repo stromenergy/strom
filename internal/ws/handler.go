@@ -3,7 +3,7 @@ package ws
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog/log"
+	"github.com/stromenergy/strom/internal/util"
 )
 
 func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
@@ -17,8 +17,7 @@ func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
 	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 
 	if err != nil {
-		log.Error().Msg("STR018: Error upgrading websocket")
-		log.Error().Err(err)
+		util.LogError("STR018: Error upgrading websocket", err)
 		return
 	}
 

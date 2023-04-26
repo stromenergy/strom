@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog/log"
+	"github.com/stromenergy/strom/internal/util"
 )
 
 const (
@@ -48,15 +48,14 @@ func (c *Client) reader() {
 
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Error().Msg("STR020: Error unexpected websocket close")
-				log.Error().Err(err)
+				util.LogError("STR020: Error unexpected websocket close", err)
 			}
 
 			break
 		}
 		
 		message = bytes.TrimSpace(bytes.Replace(message, NEWLINE, SPACE, -1))
-		c.dispatcher.Broadcast(message)
+		c.dispatcher.Message(message)
 	}
 }
 
@@ -82,8 +81,7 @@ func (c *Client) writer() {
 			w, err := c.conn.NextWriter(websocket.TextMessage)
 
 			if err != nil {
-				log.Error().Msg("STR021: Error getting writer for the message")
-				log.Error().Err(err)
+				util.LogError("STR021: Error getting writer for the message", err)
 				return
 			}
 
@@ -98,16 +96,14 @@ func (c *Client) writer() {
 			}
 
 			if err := w.Close(); err != nil {
-				log.Error().Msg("STR022: Error closing the writer")
-				log.Error().Err(err)
+				util.LogError("STR022: Error closing the writer", err)
 				return
 			}
 		case <-ticker.C:
 			c.conn.SetWriteDeadline(time.Now().Add(WRITE_WAIT))
 
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				log.Error().Msg("STR021: Error writing ping message")
-				log.Error().Err(err)
+				util.LogError("STR023: Error writing ping message", err)
 				return
 			}
 		}

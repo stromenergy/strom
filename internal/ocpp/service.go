@@ -21,7 +21,7 @@ type Ocpp struct {
 	waitGroup   *sync.WaitGroup
 
 	// Dispatcher
-	broadcast  chan []byte
+	message    chan []byte
 	clients    map[*ws.Client]bool
 	register   chan *ws.Client
 	unregister chan *ws.Client
@@ -31,7 +31,7 @@ func NewService(repository *db.Repository) OcppInterface {
 	return &Ocpp{
 		repository: repository,
 		// Dispatcher
-		broadcast:  make(chan []byte),
+		message:    make(chan []byte),
 		register:   make(chan *ws.Client),
 		unregister: make(chan *ws.Client),
 		clients:    make(map[*ws.Client]bool),

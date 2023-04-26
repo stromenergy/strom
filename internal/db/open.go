@@ -7,6 +7,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
+	"github.com/stromenergy/strom/internal/util"
 )
 
 func Open(username, password, host, port, name, sslMode string) (*sql.DB, error) {
@@ -22,7 +23,7 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 		defaultDatabase, err := sqlx.Connect("postgres", defaultDataSourceName)
 
 		if err != nil {
-			log.Error().Msg("STR003: Error connecting to default database")
+			util.LogError("STR003: Error connecting to default database", err)
 			return nil, errors.Wrap(err, "Error connecting to default database")
 		}
 
@@ -37,7 +38,7 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 			log.Debug().Msg("Creating user")
 
 			if err = createUser(defaultDatabase, username, password); err != nil {
-				log.Error().Msg("STR004: Error creating user")
+				util.LogError("STR004: Error creating user", err)
 				return nil, err
 			}
 		}
@@ -52,7 +53,7 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 			log.Debug().Msg("Creating database")
 
 			if err = createDatabase(defaultDatabase, name, username); err != nil {
-				log.Error().Msg("STR005: Error creating database")
+				util.LogError("STR005: Error creating database", err)
 				return nil, err
 			}
 		}
@@ -60,7 +61,7 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 		database, err = sqlx.Connect("postgres", dataSourceName)
 
 		if err != nil {
-			log.Error().Msg("STR006: Error connecting to database")
+			util.LogError("STR006: Error connecting to database", err)
 			return nil, err
 		}
 	}
@@ -70,12 +71,12 @@ func Open(username, password, host, port, name, sslMode string) (*sql.DB, error)
 
 func createDatabase(db *sqlx.DB, name, username string) (err error) {
 	if _, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s;", name)); err != nil {
-		log.Error().Msg("STR007: Error creating database")
+		util.LogError("STR007: Error creating database", err)
 		return errors.Wrapf(err, "Error creating database")
 	}
 
 	if _, err = db.Exec(fmt.Sprintf("GRANT ALL PRIVILEGES ON DATABASE %s TO %s;", name, username)); err != nil {
-		log.Error().Msg("STR008: Error granting database privilages")
+		util.LogError("STR008: Error granting database privilages", err)
 		return errors.Wrapf(err, "Error granting database privilages")
 	}
 
@@ -84,7 +85,7 @@ func createDatabase(db *sqlx.DB, name, username string) (err error) {
 
 func createUser(db *sqlx.DB, username, password string) error {
 	if _, err := db.Exec(fmt.Sprintf("CREATE USER %s WITH ENCRYPTED PASSWORD '%s';", username, password)); err != nil {
-		log.Error().Msg("STR009: Error creating user in default database")
+		util.LogError("STR009: Error creating user in default database", err)
 		return errors.Wrapf(err, "Error creating user in default database")
 	}
 
@@ -95,7 +96,7 @@ func hasDatabase(db *sqlx.DB, name string) (bool, error) {
 	var hasDatabase bool
 
 	if err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = $1);", name).Scan(&hasDatabase); err != nil {
-		log.Error().Msg("STR010: Error checking database exists")
+		util.LogError("STR010: Error checking database exists", err)
 		return false, errors.Wrap(err, "Error checking database exists")
 	}
 
@@ -106,7 +107,7 @@ func hasUser(db *sqlx.DB, username string) (bool, error) {
 	var hasUser bool
 
 	if err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM pg_roles WHERE rolname = $1);", username).Scan(&hasUser); err != nil {
-		log.Error().Msg("STR011: Error checking user exists in default database")
+		util.LogError("STR011: Error checking user exists in default database", err)
 		return false, errors.Wrap(err, "Error checking user exists in default database")
 	}
 

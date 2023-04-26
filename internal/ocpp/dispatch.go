@@ -13,14 +13,14 @@ const (
 	OCPP_VERSION = "ocpp1.6"
 )
 
-func (s *Ocpp) Broadcast(message []byte) {
-	s.broadcast <- message
-}
-
 func (s *Ocpp) CheckOrigin(r *http.Request) bool {
 	protocol := r.Header.Get("Sec-Websocket-Protocol")
 
 	return strings.Contains(protocol, OCPP_VERSION)
+}
+
+func (s *Ocpp) Message(message []byte) {
+	s.message <- message
 }
 
 func (s *Ocpp) Register(client *ws.Client, params gin.Params) {
@@ -48,14 +48,8 @@ func (s *Ocpp) dispatch() {
 			if _, ok := s.clients[client]; ok {
 				s.remove(client)
 			}
-		case message := <-s.broadcast:
-			for client := range s.clients {
-				select {
-				case client.Send <- message:
-				default:
-					s.remove(client)
-				}
-			}
+		case message := <-s.message:
+			s.processMessage(message)
 		}
 	}
 }

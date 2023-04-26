@@ -11,6 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/service"
+	"github.com/stromenergy/strom/internal/util"
 )
 
 type RestInterface interface {
@@ -54,7 +55,7 @@ func (s *Rest) listenAndServe(port string) {
 	err := s.server.ListenAndServe()
 
 	if err != nil && err != http.ErrServerClosed {
-		log.Error().Msg("STR018: Shutting down Rest service")
+		util.LogError("STR018: Shutting down Rest service", err)
 	}
 }
 
@@ -68,7 +69,7 @@ func (s *Rest) waitForShutdown() {
 	err := s.server.Shutdown(ctx)
 
 	if err != nil {
-		log.Error().Msg("STR019: Shutting down Rest service")
+		util.LogError("STR019: Shutting down Rest service", err)
 	}
 
 	log.Printf("Rest service shut down")
