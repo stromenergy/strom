@@ -10,6 +10,8 @@ func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
+		Subprotocols: dispatcher.Subprotocols(),
+		CheckOrigin: dispatcher.CheckOrigin,
 	}
 
 	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
@@ -26,7 +28,7 @@ func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
 		dispatcher: dispatcher,
 	}
 
-	dispatcher.Register(client)
+	dispatcher.Register(client, ctx.Params)
 
 	go client.reader()
 	go client.writer()
