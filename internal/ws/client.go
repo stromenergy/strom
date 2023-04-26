@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	WRITE_WAIT = 10 * time.Second
-	PONG_WAIT = 60 * time.Second
+	WRITE_WAIT    = 10 * time.Second
+	PONG_WAIT     = 60 * time.Second
 	PING_INTERVAL = (PONG_WAIT * 9) / 10
-	READ_LIMIT = 512
+	READ_LIMIT    = 512
 )
 
 var (
@@ -21,9 +21,18 @@ var (
 )
 
 type Client struct {
-	Send       chan []byte
+	ID         string
 	conn       *websocket.Conn
 	dispatcher Dispatcher
+	queue      chan []byte
+}
+
+func (c *Client) CloseQueue() {
+	close(c.queue)
+}
+
+func (c *Client) Send(message []byte) {
+	c.queue <- message
 }
 
 func (c *Client) close() {
@@ -53,9 +62,9 @@ func (c *Client) reader() {
 
 			break
 		}
-		
+
 		message = bytes.TrimSpace(bytes.Replace(message, NEWLINE, SPACE, -1))
-		c.dispatcher.Message(message)
+		c.dispatcher.Packet(&Packet{Client: c, Message: message})
 	}
 }
 
@@ -69,7 +78,7 @@ func (c *Client) writer() {
 
 	for {
 		select {
-		case message, ok := <-c.Send:
+		case message, ok := <-c.queue:
 			c.conn.SetWriteDeadline(time.Now().Add(WRITE_WAIT))
 
 			if !ok {
@@ -88,11 +97,11 @@ func (c *Client) writer() {
 			w.Write(message)
 
 			// Add all the other queued messages to the writer
-			n := len(c.Send)
+			n := len(c.queue)
 
 			for i := 0; i < n; i++ {
 				w.Write(NEWLINE)
-				w.Write(<-c.Send)
+				w.Write(<-c.queue)
 			}
 
 			if err := w.Close(); err != nil {

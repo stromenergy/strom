@@ -33,6 +33,21 @@ const (
 	ActionUPDATEFIRMWARE                Action = "UpdateFirmware"
 )
 
+type ErrorCode string
+
+const (
+	ErrorCodeNOTIMPLEMENTED ErrorCode = "NotImplemented"
+	ErrorCodeNOTSUPPORTED ErrorCode = "NotSupported"
+	ErrorCodeINTERNALERROR ErrorCode = "InternalError"
+	ErrorCodePROTOCOLERROR ErrorCode = "ProtocolError"
+	ErrorCodeSECURITYERROR ErrorCode = "SecurityError"
+	ErrorCodeFORMATIONVIOLATION ErrorCode = "FormationViolation"
+	ErrorCodePROPERTYCONSTRAINTVIOLATION ErrorCode = "PropertyConstraintViolation"
+	ErrorCodeOCCURENCECONSTRAINTVIOLATION ErrorCode = "OccurenceConstraintViolation"
+	ErrorCodeTYPECONSTRAINTVIOLATION ErrorCode = "TypeConstraintViolation"
+	ErrorCodeGENERICERROR ErrorCode = "GenericError"
+)
+
 type MessageType int
 
 const (

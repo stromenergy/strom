@@ -10,8 +10,8 @@ func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
-		Subprotocols: dispatcher.Subprotocols(),
-		CheckOrigin: dispatcher.CheckOrigin,
+		Subprotocols:    dispatcher.Subprotocols(),
+		CheckOrigin:     dispatcher.CheckOrigin,
 	}
 
 	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
@@ -22,9 +22,9 @@ func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
 	}
 
 	client := &Client{
-		Send:       make(chan []byte, 256),
 		conn:       conn,
 		dispatcher: dispatcher,
+		queue:      make(chan []byte, 256),
 	}
 
 	dispatcher.Register(client, ctx.Params)

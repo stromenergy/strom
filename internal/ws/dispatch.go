@@ -8,7 +8,7 @@ import (
 
 type Dispatcher interface {
 	CheckOrigin(r *http.Request) bool
-	Message(message []byte)
+	Packet(packet *Packet)
 	Register(client *Client, params gin.Params)
 	Subprotocols() []string
 	Unregister(client *Client)
