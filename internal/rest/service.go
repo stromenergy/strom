@@ -39,7 +39,6 @@ func (s *Rest) Start(port string, shutdownCtx context.Context, waitGroup *sync.W
 
 	go s.listenAndServe(port)
 	go s.waitForShutdown()
-
 }
 
 func (s *Rest) listenAndServe(port string) {
@@ -57,10 +56,6 @@ func (s *Rest) listenAndServe(port string) {
 	if err != nil && err != http.ErrServerClosed {
 		log.Error().Msg("STR018: Shutting down Rest service")
 	}
-}
-
-func (s *Rest) mountRoutes(engine *gin.Engine) {
-	
 }
 
 func (s *Rest) waitForShutdown() {
