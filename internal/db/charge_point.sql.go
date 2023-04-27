@@ -11,6 +11,7 @@ import (
 
 const createChargePoint = `-- name: CreateChargePoint :one
 INSERT INTO charge_points (
+    identity,
     model, 
     vendor,
     serial_number,
@@ -21,11 +22,12 @@ INSERT INTO charge_points (
     meter_type,
     created_at,
     updated_at
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-  RETURNING id, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+  RETURNING id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at
 `
 
 type CreateChargePointParams struct {
+	Identity          string         `db:"identity" json:"identity"`
 	Model             string         `db:"model" json:"model"`
 	Vendor            string         `db:"vendor" json:"vendor"`
 	SerialNumber      sql.NullString `db:"serial_number" json:"serialNumber"`
@@ -40,6 +42,7 @@ type CreateChargePointParams struct {
 
 func (q *Queries) CreateChargePoint(ctx context.Context, arg CreateChargePointParams) (ChargePoint, error) {
 	row := q.db.QueryRowContext(ctx, createChargePoint,
+		arg.Identity,
 		arg.Model,
 		arg.Vendor,
 		arg.SerialNumber,
@@ -54,6 +57,7 @@ func (q *Queries) CreateChargePoint(ctx context.Context, arg CreateChargePointPa
 	var i ChargePoint
 	err := row.Scan(
 		&i.ID,
+		&i.Identity,
 		&i.Model,
 		&i.Vendor,
 		&i.SerialNumber,
@@ -69,7 +73,7 @@ func (q *Queries) CreateChargePoint(ctx context.Context, arg CreateChargePointPa
 }
 
 const getChargePoint = `-- name: GetChargePoint :one
-SELECT id, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
+SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
   WHERE id = $1
 `
 
@@ -78,6 +82,32 @@ func (q *Queries) GetChargePoint(ctx context.Context, id int64) (ChargePoint, er
 	var i ChargePoint
 	err := row.Scan(
 		&i.ID,
+		&i.Identity,
+		&i.Model,
+		&i.Vendor,
+		&i.SerialNumber,
+		&i.FirmwareVerion,
+		&i.ModemIccid,
+		&i.ModemImsi,
+		&i.MeterSerialNumber,
+		&i.MeterType,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getChargePointByIdentity = `-- name: GetChargePointByIdentity :one
+SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
+  WHERE identity = $1
+`
+
+func (q *Queries) GetChargePointByIdentity(ctx context.Context, identity string) (ChargePoint, error) {
+	row := q.db.QueryRowContext(ctx, getChargePointByIdentity, identity)
+	var i ChargePoint
+	err := row.Scan(
+		&i.ID,
+		&i.Identity,
 		&i.Model,
 		&i.Vendor,
 		&i.SerialNumber,
@@ -93,7 +123,7 @@ func (q *Queries) GetChargePoint(ctx context.Context, id int64) (ChargePoint, er
 }
 
 const listChargePoints = `-- name: ListChargePoints :many
-SELECT id, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
+SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
   ORDER BY id
 `
 
@@ -108,6 +138,7 @@ func (q *Queries) ListChargePoints(ctx context.Context) ([]ChargePoint, error) {
 		var i ChargePoint
 		if err := rows.Scan(
 			&i.ID,
+			&i.Identity,
 			&i.Model,
 			&i.Vendor,
 			&i.SerialNumber,
@@ -132,7 +163,7 @@ func (q *Queries) ListChargePoints(ctx context.Context) ([]ChargePoint, error) {
 	return items, nil
 }
 
-const updateChargePoints = `-- name: UpdateChargePoints :one
+const updateChargePoint = `-- name: UpdateChargePoint :one
 UPDATE charge_points SET (
     model, 
     vendor,
@@ -145,10 +176,10 @@ UPDATE charge_points SET (
     updated_at
   ) = ($2, $3, $4, $5, $6, $7, $8, $9, $10)
   WHERE id = $1
-  RETURNING id, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at
+  RETURNING id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at
 `
 
-type UpdateChargePointsParams struct {
+type UpdateChargePointParams struct {
 	ID                int64          `db:"id" json:"id"`
 	Model             string         `db:"model" json:"model"`
 	Vendor            string         `db:"vendor" json:"vendor"`
@@ -161,8 +192,8 @@ type UpdateChargePointsParams struct {
 	UpdatedAt         time.Time      `db:"updated_at" json:"updatedAt"`
 }
 
-func (q *Queries) UpdateChargePoints(ctx context.Context, arg UpdateChargePointsParams) (ChargePoint, error) {
-	row := q.db.QueryRowContext(ctx, updateChargePoints,
+func (q *Queries) UpdateChargePoint(ctx context.Context, arg UpdateChargePointParams) (ChargePoint, error) {
+	row := q.db.QueryRowContext(ctx, updateChargePoint,
 		arg.ID,
 		arg.Model,
 		arg.Vendor,
@@ -177,6 +208,7 @@ func (q *Queries) UpdateChargePoints(ctx context.Context, arg UpdateChargePoints
 	var i ChargePoint
 	err := row.Scan(
 		&i.ID,
+		&i.Identity,
 		&i.Model,
 		&i.Vendor,
 		&i.SerialNumber,

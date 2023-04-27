@@ -1,6 +1,7 @@
 -- Charge points
 CREATE TABLE IF NOT EXISTS charge_points (
     id                  BIGSERIAL PRIMARY KEY,
+    identity            TEXT NOT NULL,
     model               TEXT NOT NULL,
     vendor              TEXT NOT NULL,
     serial_number       TEXT,

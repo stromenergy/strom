@@ -9,6 +9,7 @@ import (
 
 type ChargePoint struct {
 	ID                int64          `db:"id" json:"id"`
+	Identity          string         `db:"identity" json:"identity"`
 	Model             string         `db:"model" json:"model"`
 	Vendor            string         `db:"vendor" json:"vendor"`
 	SerialNumber      sql.NullString `db:"serial_number" json:"serialNumber"`

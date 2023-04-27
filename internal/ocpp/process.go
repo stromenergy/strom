@@ -11,6 +11,7 @@ func (s *Ocpp) processPacket(packet *ws.Packet) {
 	var callResult *MessageCallResult
 	var callError *MessageCallError
 
+	clientID := packet.Client.ID
 	messageCall := MessageCall{}
 
 	if err := json.Unmarshal(packet.Message, &messageCall); err != nil {
@@ -20,7 +21,7 @@ func (s *Ocpp) processPacket(packet *ws.Packet) {
 
 	switch messageCall.Action {
 	case ActionBOOTNOTIFICATION:
-		callResult, callError = s.bootNotificationReq(messageCall)
+		callResult, callError = s.bootNotification(clientID, messageCall)
 	default:
 		callError = NewMessageCallError(messageCall.UniqueID, ErrorCodeNOTSUPPORTED, "", NoError{})
 	}
