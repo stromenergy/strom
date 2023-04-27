@@ -3,16 +3,17 @@ package ocpp
 import (
 	"encoding/json"
 
+	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/util"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
 func (s *Ocpp) processPacket(packet *ws.Packet) {
-	var callResult *MessageCallResult
-	var callError *MessageCallError
+	var callResult *types.MessageCallResult
+	var callError *types.MessageCallError
 
 	clientID := packet.Client.ID
-	messageCall := MessageCall{}
+	messageCall := types.MessageCall{}
 
 	if err := json.Unmarshal(packet.Message, &messageCall); err != nil {
 		util.LogError("STR028: Error unmarshaling message", err)
@@ -20,16 +21,16 @@ func (s *Ocpp) processPacket(packet *ws.Packet) {
 	}
 
 	switch messageCall.Action {
-	case ActionBOOTNOTIFICATION:
-		callResult, callError = s.bootNotification(clientID, messageCall)
+	case types.ActionBOOTNOTIFICATION:
+		callResult, callError = s.bootNotification.ProcessReq(clientID, messageCall)
 	default:
-		callError = NewMessageCallError(messageCall.UniqueID, ErrorCodeNOTSUPPORTED, "", NoError{})
+		callError = types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeNOTSUPPORTED, "", types.NoError{})
 	}
 
 	s.sendResponse(packet.Client, callResult, callError)
 }
 
-func (s *Ocpp) sendResponse(client *ws.Client, callResult *MessageCallResult, callError *MessageCallError) {
+func (s *Ocpp) sendResponse(client *ws.Client, callResult *types.MessageCallResult, callError *types.MessageCallError) {
 	if callResult != nil {
 		bytes, err := json.Marshal(callResult)
 

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/db"
+	"github.com/stromenergy/strom/internal/ocpp/bootnotification"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
@@ -19,12 +20,13 @@ type Ocpp struct {
 	repository  *db.Repository
 	shutdownCtx context.Context
 	waitGroup   *sync.WaitGroup
-
 	// Dispatcher
 	inbox      chan *ws.Packet
 	clients    map[*ws.Client]bool
 	register   chan *ws.Client
 	unregister chan *ws.Client
+	// Services
+	bootNotification *bootnotification.BootNotification
 }
 
 func NewService(repository *db.Repository) OcppInterface {
@@ -35,6 +37,8 @@ func NewService(repository *db.Repository) OcppInterface {
 		register:   make(chan *ws.Client),
 		unregister: make(chan *ws.Client),
 		clients:    make(map[*ws.Client]bool),
+		// Services
+		bootNotification: bootnotification.NewService(repository),
 	}
 }
 

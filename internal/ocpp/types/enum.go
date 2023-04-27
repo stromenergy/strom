@@ -1,4 +1,4 @@
-package ocpp
+package types
 
 type Action string
 
