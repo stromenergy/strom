@@ -4,8 +4,68 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
+
+type ChargePointErrorCode string
+
+const (
+	ChargePointErrorCodeConnectorLockFailure ChargePointErrorCode = "ConnectorLockFailure"
+	ChargePointErrorCodeEVCommunicationError ChargePointErrorCode = "EVCommunicationError"
+	ChargePointErrorCodeGroundFailure        ChargePointErrorCode = "GroundFailure"
+	ChargePointErrorCodeHighTemperature      ChargePointErrorCode = "HighTemperature"
+	ChargePointErrorCodeInternalError        ChargePointErrorCode = "InternalError"
+	ChargePointErrorCodeLocalListConflict    ChargePointErrorCode = "LocalListConflict"
+	ChargePointErrorCodeNoError              ChargePointErrorCode = "NoError"
+	ChargePointErrorCodeOtherError           ChargePointErrorCode = "OtherError"
+	ChargePointErrorCodeOverCurrentFailure   ChargePointErrorCode = "OverCurrentFailure"
+	ChargePointErrorCodeOverVoltage          ChargePointErrorCode = "OverVoltage"
+	ChargePointErrorCodePowerMeterFailure    ChargePointErrorCode = "PowerMeterFailure"
+	ChargePointErrorCodePowerSwitchFailure   ChargePointErrorCode = "PowerSwitchFailure"
+	ChargePointErrorCodeReaderFailure        ChargePointErrorCode = "ReaderFailure"
+	ChargePointErrorCodeResetFailure         ChargePointErrorCode = "ResetFailure"
+	ChargePointErrorCodeUnderVoltage         ChargePointErrorCode = "UnderVoltage"
+	ChargePointErrorCodeWeakSignal           ChargePointErrorCode = "WeakSignal"
+)
+
+func (e *ChargePointErrorCode) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ChargePointErrorCode(s)
+	case string:
+		*e = ChargePointErrorCode(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ChargePointErrorCode: %T", src)
+	}
+	return nil
+}
+
+type ChargePointStatus string
+
+const (
+	ChargePointStatusAvailable     ChargePointStatus = "Available"
+	ChargePointStatusPreparing     ChargePointStatus = "Preparing"
+	ChargePointStatusCharging      ChargePointStatus = "Charging"
+	ChargePointStatusSuspendedEVSE ChargePointStatus = "SuspendedEVSE"
+	ChargePointStatusSuspendedEV   ChargePointStatus = "SuspendedEV"
+	ChargePointStatusFinishing     ChargePointStatus = "Finishing"
+	ChargePointStatusReserved      ChargePointStatus = "Reserved"
+	ChargePointStatusUnavailable   ChargePointStatus = "Unavailable"
+	ChargePointStatusFaulted       ChargePointStatus = "Faulted"
+)
+
+func (e *ChargePointStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ChargePointStatus(s)
+	case string:
+		*e = ChargePointStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ChargePointStatus: %T", src)
+	}
+	return nil
+}
 
 type ChargePoint struct {
 	ID                int64          `db:"id" json:"id"`
@@ -20,4 +80,17 @@ type ChargePoint struct {
 	MeterType         sql.NullString `db:"meter_type" json:"meterType"`
 	CreatedAt         time.Time      `db:"created_at" json:"createdAt"`
 	UpdatedAt         time.Time      `db:"updated_at" json:"updatedAt"`
+}
+
+type Connector struct {
+	ID              int64                `db:"id" json:"id"`
+	ConnectorID     int32                `db:"connector_id" json:"connectorID"`
+	ChargePointID   int64                `db:"charge_point_id" json:"chargePointID"`
+	ErrorCode       ChargePointErrorCode `db:"error_code" json:"errorCode"`
+	Status          ChargePointStatus    `db:"status" json:"status"`
+	Info            sql.NullString       `db:"info" json:"info"`
+	VendorID        sql.NullString       `db:"vendor_id" json:"vendorID"`
+	VendorErrorCode sql.NullString       `db:"vendor_error_code" json:"vendorErrorCode"`
+	CreatedAt       time.Time            `db:"created_at" json:"createdAt"`
+	UpdatedAt       time.Time            `db:"updated_at" json:"updatedAt"`
 }

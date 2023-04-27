@@ -23,6 +23,8 @@ func (s *Ocpp) processPacket(packet *ws.Packet) {
 		s.heartbeat.ProcessReq(packet.Client, messageCall)
 	case types.ActionTRIGGERMESSAGE:
 		s.triggerMessage.ProcessConf(packet.Client, messageCall)
+	case types.ActionSTATUSNOTIFICATION:
+		s.statusNotification.ProcessReq(packet.Client, messageCall)
 	default:
 		callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeNOTSUPPORTED, "", types.NoError{})
 		callError.Send(packet.Client)

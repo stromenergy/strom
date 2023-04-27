@@ -33,6 +33,41 @@ const (
 	ActionUPDATEFIRMWARE                Action = "UpdateFirmware"
 )
 
+type ChargePointErrorCode string
+
+const (
+	ChargePointErrorCodeCONNECTORLOCKFAILURE ChargePointErrorCode = "ConnectorLockFailure"
+	ChargePointErrorCodeEVCOMMUNICATIONERROR ChargePointErrorCode = "EVCommunicationError"
+	ChargePointErrorCodeGROUNDFAILURE        ChargePointErrorCode = "GroundFailure"
+	ChargePointErrorCodeHIGHTEMPERATURE      ChargePointErrorCode = "HighTemperature"
+	ChargePointErrorCodeINTERNALERROR        ChargePointErrorCode = "InternalError"
+	ChargePointErrorCodeLOCALLISTCONFLICT    ChargePointErrorCode = "LocalListConflict"
+	ChargePointErrorCodeNOERROR              ChargePointErrorCode = "NoError"
+	ChargePointErrorCodeOTHERERROR           ChargePointErrorCode = "OtherError"
+	ChargePointErrorCodeOVERCURRENTFAILURE   ChargePointErrorCode = "OverCurrentFailure"
+	ChargePointErrorCodeOVERVOLTAGE          ChargePointErrorCode = "OverVoltage"
+	ChargePointErrorCodePOWERMETERFAILURE    ChargePointErrorCode = "PowerMeterFailure"
+	ChargePointErrorCodePOWERSWITCHFAILURE   ChargePointErrorCode = "PowerSwitchFailure"
+	ChargePointErrorCodeREADERFAILURE        ChargePointErrorCode = "ReaderFailure"
+	ChargePointErrorCodeRESETFAILURE         ChargePointErrorCode = "ResetFailure"
+	ChargePointErrorCodeUNDERVOLTAGE         ChargePointErrorCode = "UnderVoltage"
+	ChargePointErrorCodeWEAKSIGNAL           ChargePointErrorCode = "WeakSignal"
+)
+
+type ChargePointStatus string
+
+const (
+	ChargePointStatusAVAILABLE     ChargePointStatus = "Available"
+	ChargePointStatusPREPARING     ChargePointStatus = "Preparing"
+	ChargePointStatusCHARGING      ChargePointStatus = "Charging"
+	ChargePointStatusSUSPENDEDEVSE ChargePointStatus = "SuspendedEVSE"
+	ChargePointStatusSUSPENDEDEV   ChargePointStatus = "SuspendedEV"
+	ChargePointStatusFINISHING     ChargePointStatus = "Finishing"
+	ChargePointStatusRESERVED      ChargePointStatus = "Reserved"
+	ChargePointStatusUNAVAILABLE   ChargePointStatus = "Unavailable"
+	ChargePointStatusFAULTED       ChargePointStatus = "Faulted"
+)
+
 type ErrorCode string
 
 const (
