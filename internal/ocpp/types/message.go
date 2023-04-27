@@ -5,12 +5,21 @@ import (
 	"errors"
 
 	"github.com/stromenergy/strom/internal/util"
+	"github.com/stromenergy/strom/internal/ws"
 )
 
 type MessageCall struct {
 	UniqueID string
 	Action   Action
-	Payload  []byte
+	Payload  interface{}
+}
+
+func NewMessageCall(uniqueID string, action Action, payload interface{}) *MessageCall {
+	return &MessageCall{
+		UniqueID: uniqueID,
+		Action:   action,
+		Payload:  payload,
+	}
 }
 
 func (m *MessageCall) MarshalJSON() ([]byte, error) {
@@ -47,20 +56,31 @@ func (m *MessageCall) UnmarshalJSON(p []byte) error {
 		return err
 	}
 
-	m.Payload = rawMessage[3]
+	m.Payload = ([]byte)(rawMessage[3])
 
 	return nil
 }
 
+func (m *MessageCall) Send(client *ws.Client) {
+	bytes, err := json.Marshal(m)
+
+	if err != nil {
+		util.LogError("STR028: Error marshaling call", err)
+		return
+	}
+
+	client.Send(bytes)
+}
+
 type MessageCallResult struct {
-	UniqueID         string
-	Payload     interface{}
+	UniqueID string
+	Payload  interface{}
 }
 
 func NewMessageCallResult(uniqueID string, payload interface{}) *MessageCallResult {
 	return &MessageCallResult{
-		UniqueID:         uniqueID,
-		Payload:     payload,
+		UniqueID: uniqueID,
+		Payload:  payload,
 	}
 }
 
@@ -68,7 +88,18 @@ func (m *MessageCallResult) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]interface{}{MessageTypeCALLRESULT, m.UniqueID, m.Payload})
 }
 
-type NoError struct {}
+func (m *MessageCallResult) Send(client *ws.Client) {
+	bytes, err := json.Marshal(m)
+
+	if err != nil {
+		util.LogError("STR029: Error marshaling result response", err)
+		return
+	}
+
+	client.Send(bytes)
+}
+
+type NoError struct{}
 
 type MessageCallError struct {
 	UniqueID         string
@@ -88,4 +119,15 @@ func NewMessageCallError(uniqueID string, code ErrorCode, description string, de
 
 func (m *MessageCallError) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]interface{}{MessageTypeCALLERROR, m.UniqueID, m.ErrorCode, m.ErrorDescription, m.ErrorDetails})
+}
+
+func (m *MessageCallError) Send(client *ws.Client) {
+	bytes, err := json.Marshal(m)
+
+	if err != nil {
+		util.LogError("STR030: Error marshaling error response", err)
+		return
+	}
+
+	client.Send(bytes)
 }

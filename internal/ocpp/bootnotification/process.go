@@ -4,22 +4,25 @@ import (
 	"context"
 
 	"github.com/stromenergy/strom/internal/db/param"
+	"github.com/stromenergy/strom/internal/ocpp/triggermessage"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/util"
+	"github.com/stromenergy/strom/internal/ws"
 )
 
 
-func (s *BootNotification) ProcessReq(clientID string, messageCall types.MessageCall) (*types.MessageCallResult, *types.MessageCallError) {
-	// TODO unmarshal data and update db
+func (s *BootNotification) ProcessReq(client *ws.Client, messageCall types.MessageCall) {
 	bootNotificationReq, err := unmarshalBootNotificationReq(messageCall.Payload)
 
 	if err != nil {
-		util.LogError("STR031: Error unmarshaling BootNotificationReq", err)
-		return nil, types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeFORMATIONVIOLATION, "", types.NoError{})
+		util.LogError("STR032: Error unmarshaling BootNotificationReq", err)
+		callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeFORMATIONVIOLATION, "", types.NoError{})
+		callError.Send(client)
+		return
 	}
 
 	ctx := context.Background()
-	chargePoint, err := s.repository.GetChargePointByIdentity(ctx, clientID)
+	chargePoint, err := s.repository.GetChargePointByIdentity(ctx, client.ID)
 
 	if err == nil {
 		// Update existing charge point
@@ -36,24 +39,26 @@ func (s *BootNotification) ProcessReq(clientID string, messageCall types.Message
 		_, err = s.repository.UpdateChargePoint(ctx, updateChargePointParams)
 
 		if err != nil {
-			util.LogError("STR032: Error updating charge point", err)
-			return nil, types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			util.LogError("STR033: Error updating charge point", err)
+			callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			callError.Send(client)
+			return
 		}
 	} else {
 		// Create new charge point
-		createChargePointParams := createChargePointParams(clientID, bootNotificationReq)
+		createChargePointParams := createChargePointParams(client.ID, bootNotificationReq)
 
 		_, err = s.repository.CreateChargePoint(ctx, createChargePointParams)
 
 		if err != nil {
-			util.LogError("STR033: Error creating charge point", err)
-			return nil, types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			util.LogError("STR034: Error creating charge point", err)
+			callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			callError.Send(client)
+			return
 		}
 
 		// TODO: Create a nostr account
 	}
-
-	// TODO: Notify UI of changes
 
 	bootNotificationConf := BootNotificationConf{
 		CurrentTime: types.NewOcppTime(nil),
@@ -61,5 +66,11 @@ func (s *BootNotification) ProcessReq(clientID string, messageCall types.Message
 		Status:      types.RegistrationStatusACCEPTED,
 	}
 
-	return types.NewMessageCallResult(messageCall.UniqueID, bootNotificationConf), nil
+	callResult := types.NewMessageCallResult(messageCall.UniqueID, bootNotificationConf)
+	callResult.Send(client)
+
+	triggermessage.Request(client, types.MessageTriggerSTATUSNOTIFICATION, nil)
+	triggermessage.Request(client, types.MessageTriggerMETERVALUES, nil)
+	
+	// TODO: Notify UI of changes
 }

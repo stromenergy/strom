@@ -2,6 +2,7 @@ package bootnotification
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/stromenergy/strom/internal/ocpp/types"
 )
@@ -9,13 +10,13 @@ import (
 type BootNotificationReq struct {
 	ChargePointModel        string  `json:"chargePointModel"`
 	ChargePointVendor       string  `json:"chargePointVendor"`
-	ChargeBoxSerialNumber   *string `json:"chargeBoxSerialNumber"`
-	ChargePointSerialNumber *string `json:"chargePointSerialNumber"`
-	FirmwareVersion         *string `json:"firmwareVersion"`
-	Iccid                   *string `json:"iccid"`
-	Imsi                    *string `json:"imsi"`
-	MeterSerialNumber       *string `json:"meterSerialNumber"`
-	MeterType               *string `json:"meterType"`
+	ChargeBoxSerialNumber   *string `json:"chargeBoxSerialNumber,omitempty"`
+	ChargePointSerialNumber *string `json:"chargePointSerialNumber,omitempty"`
+	FirmwareVersion         *string `json:"firmwareVersion,omitempty"`
+	Iccid                   *string `json:"iccid,omitempty"`
+	Imsi                    *string `json:"imsi,omitempty"`
+	MeterSerialNumber       *string `json:"meterSerialNumber,omitempty"`
+	MeterType               *string `json:"meterType,omitempty"`
 }
 
 type BootNotificationConf struct {
@@ -24,11 +25,16 @@ type BootNotificationConf struct {
 	Status      types.RegistrationStatus `json:"status"`
 }
 
-func unmarshalBootNotificationReq(payload []byte) (*BootNotificationReq, error) {
+func unmarshalBootNotificationReq(payload interface{}) (*BootNotificationReq, error) {
 	bootNotificationReq := &BootNotificationReq{}
 
-	if err := json.Unmarshal(payload, bootNotificationReq); err != nil {
-		return nil, err
+	switch typedPayload := payload.(type) {
+	case []byte:
+		if err := json.Unmarshal(typedPayload, bootNotificationReq); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid type")
 	}
 
 	return bootNotificationReq, nil

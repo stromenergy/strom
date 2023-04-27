@@ -56,10 +56,29 @@ const (
 	MessageTypeCALLERROR  MessageType = 4
 )
 
+type MessageTrigger string
+
+const (
+	MessageTriggerBOOTNOTIFICATION              MessageTrigger = "BootNotification"
+	MessageTriggerDIAGNOSTICSSTATUSNOTIFICATION MessageTrigger = "DiagnosticsStatusNotification"
+	MessageTriggerFIRMWARESTATUSNOTIFICATION    MessageTrigger = "FirmwareStatusNotification"
+	MessageTriggerHEARTBEAT                     MessageTrigger = "Heartbeat"
+	MessageTriggerMETERVALUES                   MessageTrigger = "MeterValues"
+	MessageTriggerSTATUSNOTIFICATION            MessageTrigger = "StatusNotification"
+)
+
 type RegistrationStatus string
 
 const (
 	RegistrationStatusACCEPTED RegistrationStatus = "Accepted"
 	RegistrationStatusPENDING  RegistrationStatus = "Pending"
 	RegistrationStatusREJECTED RegistrationStatus = "Rejected"
+)
+
+type TriggerMessageStatus string
+
+const (
+	TriggerMessageStatusACCEPTED       TriggerMessageStatus = "Accepted"
+	TriggerMessageStatusREJECTED       TriggerMessageStatus = "Rejected"
+	TriggerMessageStatusNOTIMPLEMENTED TriggerMessageStatus = "NotImplemented"
 )
