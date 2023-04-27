@@ -55,3 +55,20 @@ To communicate with the charge point, Strom will use [OCPP 1.6](https://github.c
 ### OCPI Extension
 
 Strom could also be extended to support [OCPI](https://github.com/ocpi/ocpi) (Open Charge Point Interface). This would allow eMSPs (e-Mobility Service Providers) to connect to a Strom instance to make the charge points managed publically available. To support only lightning payments, the OCPI specification could be extended with a module that supports payment streaming for ongoing sessions. Otherwise the OCPI tariffs could be defined in BTC and payment made once the session is finished and the CDR is received.
+
+## Roadmap
+
+- [ ] Project framework
+- [ ] OCPP 1.6 core
+- [ ] LND backend
+- [ ] Basic Admin UI
+- [ ] REST API
+- [ ] Static tariff management
+- [ ] Public charge point UI
+- [ ] LNURL session management
+- [ ] Nostr session management
+- [ ] Umbrel app integration
+- [ ] Second Lightning backend
+- [ ] Websocket UI
+- [ ] Dynamic tariff management
+- [ ] OCPI extension
