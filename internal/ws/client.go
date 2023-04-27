@@ -2,6 +2,7 @@ package ws
 
 import (
 	"bytes"
+	"fmt"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -64,6 +65,7 @@ func (c *Client) reader() {
 		}
 
 		message = bytes.TrimSpace(bytes.Replace(message, NEWLINE, SPACE, -1))
+		util.LogDebug(fmt.Sprintf("> %s", string(message)))
 		c.dispatcher.Packet(&Packet{Client: c, Message: message})
 	}
 }
@@ -94,14 +96,18 @@ func (c *Client) writer() {
 				return
 			}
 
+			util.LogDebug(fmt.Sprintf("< %s", string(message)))
 			w.Write(message)
 
 			// Add all the other queued messages to the writer
-			n := len(c.queue)
+			queueLength := len(c.queue)
 
-			for i := 0; i < n; i++ {
+			for i := 0; i < queueLength; i++ {
+				message = <-c.queue
+				util.LogDebug(fmt.Sprintf("< %s", string(message)))
+
 				w.Write(NEWLINE)
-				w.Write(<-c.queue)
+				w.Write(message)
 			}
 
 			if err := w.Close(); err != nil {

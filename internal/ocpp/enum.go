@@ -36,16 +36,16 @@ const (
 type ErrorCode string
 
 const (
-	ErrorCodeNOTIMPLEMENTED ErrorCode = "NotImplemented"
-	ErrorCodeNOTSUPPORTED ErrorCode = "NotSupported"
-	ErrorCodeINTERNALERROR ErrorCode = "InternalError"
-	ErrorCodePROTOCOLERROR ErrorCode = "ProtocolError"
-	ErrorCodeSECURITYERROR ErrorCode = "SecurityError"
-	ErrorCodeFORMATIONVIOLATION ErrorCode = "FormationViolation"
-	ErrorCodePROPERTYCONSTRAINTVIOLATION ErrorCode = "PropertyConstraintViolation"
+	ErrorCodeNOTIMPLEMENTED               ErrorCode = "NotImplemented"
+	ErrorCodeNOTSUPPORTED                 ErrorCode = "NotSupported"
+	ErrorCodeINTERNALERROR                ErrorCode = "InternalError"
+	ErrorCodePROTOCOLERROR                ErrorCode = "ProtocolError"
+	ErrorCodeSECURITYERROR                ErrorCode = "SecurityError"
+	ErrorCodeFORMATIONVIOLATION           ErrorCode = "FormationViolation"
+	ErrorCodePROPERTYCONSTRAINTVIOLATION  ErrorCode = "PropertyConstraintViolation"
 	ErrorCodeOCCURENCECONSTRAINTVIOLATION ErrorCode = "OccurenceConstraintViolation"
-	ErrorCodeTYPECONSTRAINTVIOLATION ErrorCode = "TypeConstraintViolation"
-	ErrorCodeGENERICERROR ErrorCode = "GenericError"
+	ErrorCodeTYPECONSTRAINTVIOLATION      ErrorCode = "TypeConstraintViolation"
+	ErrorCodeGENERICERROR                 ErrorCode = "GenericError"
 )
 
 type MessageType int
@@ -54,4 +54,12 @@ const (
 	MessageTypeCALL       MessageType = 2
 	MessageTypeCALLRESULT MessageType = 3
 	MessageTypeCALLERROR  MessageType = 4
+)
+
+type RegistrationStatus string
+
+const (
+	RegistrationStatusACCEPTED RegistrationStatus = "Accepted"
+	RegistrationStatusPENDING  RegistrationStatus = "Pending"
+	RegistrationStatusREJECTED RegistrationStatus = "Rejected"
 )
