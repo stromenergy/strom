@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/ocpp/bootnotification"
+	"github.com/stromenergy/strom/internal/ocpp/heartbeat"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
@@ -27,6 +28,7 @@ type Ocpp struct {
 	unregister chan *ws.Client
 	// Services
 	bootNotification *bootnotification.BootNotification
+	heartbeat        *heartbeat.Heartbeat
 }
 
 func NewService(repository *db.Repository) OcppInterface {
@@ -39,6 +41,7 @@ func NewService(repository *db.Repository) OcppInterface {
 		clients:    make(map[*ws.Client]bool),
 		// Services
 		bootNotification: bootnotification.NewService(repository),
+		heartbeat:        heartbeat.NewService(repository),
 	}
 }
 

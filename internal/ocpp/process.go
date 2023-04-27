@@ -23,6 +23,8 @@ func (s *Ocpp) processPacket(packet *ws.Packet) {
 	switch messageCall.Action {
 	case types.ActionBOOTNOTIFICATION:
 		callResult, callError = s.bootNotification.ProcessReq(clientID, messageCall)
+	case types.ActionHEARTBEAT:
+		callResult, callError = s.heartbeat.ProcessReq(clientID, messageCall)
 	default:
 		callError = types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeNOTSUPPORTED, "", types.NoError{})
 	}
