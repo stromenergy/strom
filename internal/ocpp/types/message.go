@@ -4,128 +4,116 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/util"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-type MessageCall struct {
-	UniqueID string
-	Action   Action
-	Payload  interface{}
+type NoError struct{}
+
+type Message struct {
+	MessageType      MessageType
+	UniqueID         string
+	Action           db.CallAction
+	ErrorCode        ErrorCode
+	ErrorDescription string
+	Payload          interface{}
 }
 
-func NewMessageCall(uniqueID string, action Action, payload interface{}) *MessageCall {
-	return &MessageCall{
-		UniqueID: uniqueID,
-		Action:   action,
-		Payload:  payload,
+func NewMessageCall(uniqueID string, action db.CallAction, payload interface{}) *Message {
+	return &Message{
+		MessageType: MessageTypeCall,
+		UniqueID:    uniqueID,
+		Action:      action,
+		Payload:     payload,
 	}
 }
 
-func (m *MessageCall) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]interface{}{MessageTypeCALL, m.UniqueID, m.Action, m.Payload})
+func NewMessageCallError(uniqueID string, code ErrorCode, description string, details interface{}) *Message {
+	if details == nil {
+		details = NoError{}
+	}
+
+	return &Message{
+		MessageType:      MessageTypeCallError,
+		UniqueID:         uniqueID,
+		ErrorCode:        code,
+		ErrorDescription: description,
+		Payload:          details,
+	}
 }
 
-func (m *MessageCall) UnmarshalJSON(p []byte) error {
+func NewMessageCallResult(uniqueID string, payload interface{}) *Message {
+	return &Message{
+		MessageType: MessageTypeCallResult,
+		UniqueID:    uniqueID,
+		Payload:     payload,
+	}
+}
+
+func (m *Message) MarshalJSON() ([]byte, error) {
+	switch m.MessageType {
+	case MessageTypeCall:
+		return json.Marshal([]interface{}{MessageTypeCall, m.UniqueID, m.Action, m.Payload})
+	case MessageTypeCallError:
+		return json.Marshal([]interface{}{MessageTypeCall, m.UniqueID, m.ErrorCode, m.ErrorDescription, m.Payload})
+	case MessageTypeCallResult:
+		return json.Marshal([]interface{}{MessageTypeCall, m.UniqueID, m.Payload})
+	}
+
+	return nil, errors.New("Invalid message type")
+}
+
+func (m *Message) UnmarshalJSON(p []byte) error {
 	var rawMessage []json.RawMessage
-	var messageTypeID MessageType
 
 	if err := json.Unmarshal(p, &rawMessage); err != nil {
 		util.LogError("STR023: Error unmarshaling json", err)
 		return err
 	}
 
-	if err := json.Unmarshal(rawMessage[0], &messageTypeID); err != nil {
+	if err := json.Unmarshal(rawMessage[0], &m.MessageType); err != nil {
 		util.LogError("STR024: Error unmarshaling MessageTypeID", err)
 		return err
 	}
 
-	if messageTypeID != MessageTypeCALL {
-		err := errors.New("Message type mismatch")
-		util.LogError("STR025: Message type mismatch", err)
-		return err
-	}
-
 	if err := json.Unmarshal(rawMessage[1], &m.UniqueID); err != nil {
-		util.LogError("STR026: Error unmarshaling UniqueID", err)
+		util.LogError("STR025: Error unmarshaling UniqueID", err)
 		return err
 	}
 
-	if err := json.Unmarshal(rawMessage[2], &m.Action); err != nil {
-		util.LogError("STR027: Error unmarshaling Action", err)
-		return err
-	}
+	switch m.MessageType {
+	case MessageTypeCall:
+		if err := json.Unmarshal(rawMessage[2], &m.Action); err != nil {
+			util.LogError("STR026: Error unmarshaling Action", err)
+			return err
+		}
 
-	m.Payload = ([]byte)(rawMessage[3])
+		m.Payload = ([]byte)(rawMessage[3])
+	case MessageTypeCallError:
+		if err := json.Unmarshal(rawMessage[2], &m.ErrorCode); err != nil {
+			util.LogError("STR027: Error unmarshaling ErrorCode", err)
+			return err
+		}
+
+		if err := json.Unmarshal(rawMessage[3], &m.ErrorDescription); err != nil {
+			util.LogError("STR028: Error unmarshaling ErrorDescription", err)
+			return err
+		}
+
+		m.Payload = ([]byte)(rawMessage[4])
+	case MessageTypeCallResult:
+		m.Payload = ([]byte)(rawMessage[2])
+	}
 
 	return nil
 }
 
-func (m *MessageCall) Send(client *ws.Client) {
+func (m *Message) Send(client *ws.Client) {
 	bytes, err := json.Marshal(m)
 
 	if err != nil {
-		util.LogError("STR028: Error marshaling call", err)
-		return
-	}
-
-	client.Send(bytes)
-}
-
-type MessageCallResult struct {
-	UniqueID string
-	Payload  interface{}
-}
-
-func NewMessageCallResult(uniqueID string, payload interface{}) *MessageCallResult {
-	return &MessageCallResult{
-		UniqueID: uniqueID,
-		Payload:  payload,
-	}
-}
-
-func (m *MessageCallResult) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]interface{}{MessageTypeCALLRESULT, m.UniqueID, m.Payload})
-}
-
-func (m *MessageCallResult) Send(client *ws.Client) {
-	bytes, err := json.Marshal(m)
-
-	if err != nil {
-		util.LogError("STR029: Error marshaling result response", err)
-		return
-	}
-
-	client.Send(bytes)
-}
-
-type NoError struct{}
-
-type MessageCallError struct {
-	UniqueID         string
-	ErrorCode        ErrorCode
-	ErrorDescription string
-	ErrorDetails     interface{}
-}
-
-func NewMessageCallError(uniqueID string, code ErrorCode, description string, details interface{}) *MessageCallError {
-	return &MessageCallError{
-		UniqueID:         uniqueID,
-		ErrorCode:        code,
-		ErrorDescription: description,
-		ErrorDetails:     details,
-	}
-}
-
-func (m *MessageCallError) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]interface{}{MessageTypeCALLERROR, m.UniqueID, m.ErrorCode, m.ErrorDescription, m.ErrorDetails})
-}
-
-func (m *MessageCallError) Send(client *ws.Client) {
-	bytes, err := json.Marshal(m)
-
-	if err != nil {
-		util.LogError("STR030: Error marshaling error response", err)
+		util.LogError("STR029: Error marshaling message", err)
 		return
 	}
 

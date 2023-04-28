@@ -4,19 +4,18 @@ import (
 	"context"
 
 	"github.com/stromenergy/strom/internal/db/param"
-	"github.com/stromenergy/strom/internal/ocpp/triggermessage"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/util"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
 
-func (s *BootNotification) ProcessReq(client *ws.Client, messageCall types.MessageCall) {
-	bootNotificationReq, err := unmarshalBootNotificationReq(messageCall.Payload)
+func (s *BootNotification) ProcessReq(client *ws.Client, message types.Message) {
+	bootNotificationReq, err := unmarshalBootNotificationReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR032: Error unmarshaling BootNotificationReq", err)
-		callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeFORMATIONVIOLATION, "", types.NoError{})
+		callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeFormationViolation, "", types.NoError{})
 		callError.Send(client)
 		return
 	}
@@ -40,7 +39,7 @@ func (s *BootNotification) ProcessReq(client *ws.Client, messageCall types.Messa
 
 		if err != nil {
 			util.LogError("STR033: Error updating charge point", err)
-			callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeInternalError, "", types.NoError{})
 			callError.Send(client)
 			return
 		}
@@ -52,7 +51,7 @@ func (s *BootNotification) ProcessReq(client *ws.Client, messageCall types.Messa
 
 		if err != nil {
 			util.LogError("STR034: Error creating charge point", err)
-			callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeInternalError, "", types.NoError{})
 			callError.Send(client)
 			return
 		}
@@ -63,14 +62,14 @@ func (s *BootNotification) ProcessReq(client *ws.Client, messageCall types.Messa
 	bootNotificationConf := BootNotificationConf{
 		CurrentTime: types.NewOcppTime(nil),
 		Interval:    900,
-		Status:      types.RegistrationStatusACCEPTED,
+		Status:      types.RegistrationStatusAccepted,
 	}
 
-	callResult := types.NewMessageCallResult(messageCall.UniqueID, bootNotificationConf)
+	callResult := types.NewMessageCallResult(message.UniqueID, bootNotificationConf)
 	callResult.Send(client)
 
-	triggermessage.Request(client, types.MessageTriggerSTATUSNOTIFICATION, nil)
-	triggermessage.Request(client, types.MessageTriggerMETERVALUES, nil)
+	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerStatusNotification, nil)
+	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerMeterValues, nil)
 	
 	// TODO: Notify UI of changes
 }

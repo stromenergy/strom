@@ -99,17 +99,6 @@ func (c *Client) writer() {
 			util.LogDebug(fmt.Sprintf("< %s", string(message)))
 			w.Write(message)
 
-			// Add all the other queued messages to the writer
-			queueLength := len(c.queue)
-
-			for i := 0; i < queueLength; i++ {
-				message = <-c.queue
-				util.LogDebug(fmt.Sprintf("< %s", string(message)))
-
-				w.Write(NEWLINE)
-				w.Write(message)
-			}
-
 			if err := w.Close(); err != nil {
 				util.LogError("STR022: Error closing the writer", err)
 				return

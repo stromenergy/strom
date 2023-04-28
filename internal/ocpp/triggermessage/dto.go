@@ -9,7 +9,7 @@ import (
 
 type TriggerMessageReq struct {
 	MessageTrigger types.MessageTrigger `json:"messageTrigger"`
-	ConnectorID    *int                 `json:"connectorId,omitempty"`
+	ConnectorID    *int32                 `json:"connectorId,omitempty"`
 }
 
 type TriggerMessageConf struct {

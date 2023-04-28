@@ -12,8 +12,8 @@ func createConnectorParams(chargePointID int64, statusNotificationReq *StatusNot
 	timestamp := util.DefaultTime(types.NilTime(statusNotificationReq.Timestamp), time.Now())
 
 	return db.CreateConnectorParams{
-		ConnectorID:     statusNotificationReq.ConnectorID,
 		ChargePointID:   chargePointID,
+		ConnectorID:     statusNotificationReq.ConnectorID,
 		ErrorCode:       db.ChargePointErrorCode(statusNotificationReq.ErrorCode),
 		Status:          db.ChargePointStatus(statusNotificationReq.Status),
 		Info:            util.SqlNullString(statusNotificationReq.Info),

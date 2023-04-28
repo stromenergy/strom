@@ -9,7 +9,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *Heartbeat) ProcessReq(client *ws.Client, messageCall types.MessageCall) {
+func (s *Heartbeat) ProcessReq(client *ws.Client, message types.Message) {
 	ctx := context.Background()
 	chargePoint, err := s.repository.GetChargePointByIdentity(ctx, client.ID)
 
@@ -21,7 +21,7 @@ func (s *Heartbeat) ProcessReq(client *ws.Client, messageCall types.MessageCall)
 
 		if err != nil {
 			util.LogError("5: Error updating charge point", err)
-			callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeInternalError, "", types.NoError{})
 			callError.Send(client)
 			return
 		}
@@ -33,6 +33,6 @@ func (s *Heartbeat) ProcessReq(client *ws.Client, messageCall types.MessageCall)
 		CurrentTime: types.NewOcppTime(nil),
 	}
 
-	callResult := types.NewMessageCallResult(messageCall.UniqueID, heartbeatConf)
+	callResult := types.NewMessageCallResult(message.UniqueID, heartbeatConf)
 	callResult.Send(client)
 }

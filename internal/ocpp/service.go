@@ -8,7 +8,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/ocpp/bootnotification"
+	"github.com/stromenergy/strom/internal/ocpp/call"
 	"github.com/stromenergy/strom/internal/ocpp/heartbeat"
+	"github.com/stromenergy/strom/internal/ocpp/reservenow"
 	"github.com/stromenergy/strom/internal/ocpp/statusnotification"
 	"github.com/stromenergy/strom/internal/ocpp/triggermessage"
 	"github.com/stromenergy/strom/internal/ws"
@@ -29,13 +31,18 @@ type Ocpp struct {
 	register   chan *ws.Client
 	unregister chan *ws.Client
 	// Services
+	call               *call.Call
 	bootNotification   *bootnotification.BootNotification
 	heartbeat          *heartbeat.Heartbeat
+	reserverNow        *reservenow.ReserveNow
 	statusNotification *statusnotification.StatusNotification
 	triggerMessage     *triggermessage.TriggerMessage
 }
 
 func NewService(repository *db.Repository) OcppInterface {
+	callService := call.NewService(repository)
+	triggerMessageService := triggermessage.NewService(repository, callService)
+
 	return &Ocpp{
 		repository: repository,
 		// Dispatcher
@@ -44,10 +51,12 @@ func NewService(repository *db.Repository) OcppInterface {
 		unregister: make(chan *ws.Client),
 		clients:    make(map[*ws.Client]bool),
 		// Services
-		bootNotification:   bootnotification.NewService(repository),
+		call:               callService,
+		bootNotification:   bootnotification.NewService(repository, triggerMessageService),
 		heartbeat:          heartbeat.NewService(repository),
+		reserverNow:        reservenow.NewService(repository, callService),
 		statusNotification: statusnotification.NewService(repository),
-		triggerMessage:     triggermessage.NewService(repository),
+		triggerMessage:     triggerMessageService,
 	}
 }
 

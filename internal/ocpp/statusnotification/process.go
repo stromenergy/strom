@@ -11,12 +11,12 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *StatusNotification) ProcessReq(client *ws.Client, messageCall types.MessageCall) {
-	statusNotificationReq, err := unmarshalStatusNotificationReq(messageCall.Payload)
+func (s *StatusNotification) ProcessReq(client *ws.Client, message types.Message) {
+	statusNotificationReq, err := unmarshalStatusNotificationReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR036: Error unmarshaling StatusNotificationReq", err)
-		callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeFORMATIONVIOLATION, "", types.NoError{})
+		callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeFormationViolation, "", types.NoError{})
 		callError.Send(client)
 		return
 	}
@@ -26,7 +26,7 @@ func (s *StatusNotification) ProcessReq(client *ws.Client, messageCall types.Mes
 
 	if err != nil {
 		util.LogError("STR037: Charge point not found", err)
-		callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+		callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeInternalError, "", types.NoError{})
 		callError.Send(client)
 		return
 	}
@@ -52,7 +52,7 @@ func (s *StatusNotification) ProcessReq(client *ws.Client, messageCall types.Mes
 
 		if err != nil {
 			util.LogError("STR038: Error updating connector", err)
-			callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeInternalError, "", types.NoError{})
 			callError.Send(client)
 			return
 		}
@@ -64,13 +64,13 @@ func (s *StatusNotification) ProcessReq(client *ws.Client, messageCall types.Mes
 
 		if err != nil {
 			util.LogError("STR039: Error creating connector", err)
-			callError := types.NewMessageCallError(messageCall.UniqueID, types.ErrorCodeINTERNALERROR, "", types.NoError{})
+			callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeInternalError, "", types.NoError{})
 			callError.Send(client)
 			return
 		}
 	}
 
-	callResult := types.NewMessageCallResult(messageCall.UniqueID, StatusNotificationConf{})
+	callResult := types.NewMessageCallResult(message.UniqueID, StatusNotificationConf{})
 	callResult.Send(client)
 
 	// TODO: Notify UI of changes

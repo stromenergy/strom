@@ -1,17 +1,19 @@
 package triggermessage
 
 import (
-	"github.com/google/uuid"
+	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func Request(client *ws.Client, messageTrigger types.MessageTrigger, connectorId *int) {
-	triggerMessageReq := TriggerMessageReq{
-		MessageTrigger: messageTrigger,
-		ConnectorID: connectorId,
-	}
+func (s *TriggerMessage) Request(client *ws.Client, chargePointId int64, messageTrigger types.MessageTrigger, connectorId *int32) {
+	if call, err := s.call.Create(chargePointId, db.CallActionTriggerMessage); err == nil {
+		triggerMessageReq := TriggerMessageReq{
+			MessageTrigger: messageTrigger,
+			ConnectorID:    connectorId,
+		}
 
-	messageCall := types.NewMessageCall(uuid.NewString(), types.ActionTRIGGERMESSAGE, triggerMessageReq)
-	messageCall.Send(client)
+		message := types.NewMessageCall(call.ReqID, db.CallActionTriggerMessage, triggerMessageReq)
+		message.Send(client)
+	}
 }
