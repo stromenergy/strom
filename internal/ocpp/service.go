@@ -12,6 +12,7 @@ import (
 	"github.com/stromenergy/strom/internal/ocpp/heartbeat"
 	"github.com/stromenergy/strom/internal/ocpp/reservenow"
 	"github.com/stromenergy/strom/internal/ocpp/statusnotification"
+	"github.com/stromenergy/strom/internal/ocpp/transaction"
 	"github.com/stromenergy/strom/internal/ocpp/triggermessage"
 	"github.com/stromenergy/strom/internal/ws"
 )
@@ -36,6 +37,7 @@ type Ocpp struct {
 	heartbeat          *heartbeat.Heartbeat
 	reserverNow        *reservenow.ReserveNow
 	statusNotification *statusnotification.StatusNotification
+	transaction        *transaction.Transaction
 	triggerMessage     *triggermessage.TriggerMessage
 }
 
@@ -56,6 +58,7 @@ func NewService(repository *db.Repository) OcppInterface {
 		heartbeat:          heartbeat.NewService(repository),
 		reserverNow:        reservenow.NewService(repository, callService),
 		statusNotification: statusnotification.NewService(repository),
+		transaction:        transaction.NewService(repository),
 		triggerMessage:     triggerMessageService,
 	}
 }

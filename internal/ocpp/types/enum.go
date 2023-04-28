@@ -1,5 +1,15 @@
 package types
 
+type AuthorizationStatus string
+
+const (
+	AuthorizationStatusAccepted     AuthorizationStatus = "Accepted"
+	AuthorizationStatusBlocked      AuthorizationStatus = "Blocked"
+	AuthorizationStatusExpired      AuthorizationStatus = "Expired"
+	AuthorizationStatusInvalid      AuthorizationStatus = "Invalid"
+	AuthorizationStatusConcurrentTx AuthorizationStatus = "ConcurrentTx"
+)
+
 type ErrorCode string
 
 const (

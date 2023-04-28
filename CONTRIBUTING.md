@@ -133,20 +133,3 @@ included in the project:
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project
 owners to license your work under the terms of the [MIT License](https://github.com/stromenergy/strom/blob/main/LICENSE.md).
-
-# Collaborating guidelines
-
-You can find the list of all contributors in [README.md](./README.md).
-
-There are few basic rules to ensure high quality of the boilerplate:
-
-- Before merging, a PR requires at least two approvals from the collaborators unless it's an architectural change, a large feature, etc. If it is, then at least 50% of the core team have to agree to merge it, with every team member having a full veto right. (i.e. every single one can block any PR)
-- A PR should remain open for at least two days before merging (does not apply for trivial contributions like fixing a typo). This way everyone has enough time to look into it.
-
-You are always welcome to discuss and propose improvements to this guideline.
-
-# Add yourself as a contributor
-
-This project follows the [All Contributors specification](https://allcontributors.org/). To add yourself to the table of contributors in the README file, please use the [bot](https://allcontributors.org/docs/en/bot/overview) or the [CLI](https://allcontributors.org/docs/en/cli/overview) as part of your PR.
-
-If you've already added yourself to the list and are making a new type of contribution, you can run it again and select the new contribution type.

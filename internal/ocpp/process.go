@@ -34,6 +34,8 @@ func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 		s.bootNotification.ProcessReq(client, message)
 	case db.CallActionHeartbeat:
 		s.heartbeat.ProcessReq(client, message)
+	case db.CallActionStartTransaction:
+		s.transaction.StartTransactionReq(client, message)
 	case db.CallActionStatusNotification:
 		s.statusNotification.ProcessReq(client, message)
 	default:
