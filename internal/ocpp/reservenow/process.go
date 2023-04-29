@@ -10,7 +10,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *ReserveNow) ProcessConf(client *ws.Client, message types.Message) {
+func (s *ReserveNow) ReserveNowConf(client *ws.Client, message types.Message) {
 	reserveNowConf, err := unmarshalReserveNowConf(message.Payload)
 
 	if err != nil {

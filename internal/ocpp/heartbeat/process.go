@@ -9,7 +9,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *Heartbeat) ProcessReq(client *ws.Client, message types.Message) {
+func (s *Heartbeat) HeartbeatReq(client *ws.Client, message types.Message) {
 	ctx := context.Background()
 	chargePoint, err := s.repository.GetChargePointByIdentity(ctx, client.ID)
 

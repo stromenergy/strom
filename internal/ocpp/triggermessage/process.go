@@ -6,7 +6,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *TriggerMessage) ProcessConf(client *ws.Client, message types.Message) {
+func (s *TriggerMessage) TriggerMessageConf(client *ws.Client, message types.Message) {
 	_, err := unmarshalTriggerMessageConf(message.Payload)
 
 	if err != nil {

@@ -9,8 +9,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-
-func (s *BootNotification) ProcessReq(client *ws.Client, message types.Message) {
+func (s *BootNotification) BootNotificationReq(client *ws.Client, message types.Message) {
 	bootNotificationReq, err := unmarshalBootNotificationReq(message.Payload)
 
 	if err != nil {
@@ -70,6 +69,6 @@ func (s *BootNotification) ProcessReq(client *ws.Client, message types.Message) 
 
 	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerStatusNotification, nil)
 	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerMeterValues, nil)
-	
+
 	// TODO: Notify UI of changes
 }

@@ -29,7 +29,6 @@ func (s *Transaction) StartTransactionReq(client *ws.Client, message types.Messa
 	}
 
 	createTransactionParams := createTransactionParams(chargePoint.ID, startTransactionReq)
-
 	transaction, err := s.repository.CreateTransaction(ctx, createTransactionParams)
 
 	if err != nil {
@@ -40,14 +39,14 @@ func (s *Transaction) StartTransactionReq(client *ws.Client, message types.Messa
 	}
 
 	// TODO: Authenticate IDTag against tags table
-	startransactionConf := StartTransactionConf{
+	starTransactionConf := StartTransactionConf{
 		IDTagInfo: IDTagInfo{
 			Status: types.AuthorizationStatusAccepted,
 		},
 		TransactionID: transaction.ID,
 	}
 
-	callResult := types.NewMessageCallResult(message.UniqueID, startransactionConf)
+	callResult := types.NewMessageCallResult(message.UniqueID, starTransactionConf)
 	callResult.Send(client)
 
 	// TODO: Notify UI of changes

@@ -11,7 +11,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *StatusNotification) ProcessReq(client *ws.Client, message types.Message) {
+func (s *StatusNotification) StatusNotificationReq(client *ws.Client, message types.Message) {
 	statusNotificationReq, err := unmarshalStatusNotificationReq(message.Payload)
 
 	if err != nil {

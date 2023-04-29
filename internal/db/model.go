@@ -184,6 +184,309 @@ func (ns NullChargePointStatus) Value() (driver.Value, error) {
 	return string(ns.ChargePointStatus), nil
 }
 
+type MeterLocation string
+
+const (
+	MeterLocationBody   MeterLocation = "Body"
+	MeterLocationCable  MeterLocation = "Cable"
+	MeterLocationEV     MeterLocation = "EV"
+	MeterLocationInlet  MeterLocation = "Inlet"
+	MeterLocationOutlet MeterLocation = "Outlet"
+)
+
+func (e *MeterLocation) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MeterLocation(s)
+	case string:
+		*e = MeterLocation(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MeterLocation: %T", src)
+	}
+	return nil
+}
+
+type NullMeterLocation struct {
+	MeterLocation MeterLocation
+	Valid         bool // Valid is true if MeterLocation is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMeterLocation) Scan(value interface{}) error {
+	if value == nil {
+		ns.MeterLocation, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MeterLocation.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMeterLocation) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MeterLocation), nil
+}
+
+type MeterMeasurand string
+
+const (
+	MeterMeasurandCurrentExport                MeterMeasurand = "Current.Export"
+	MeterMeasurandCurrentImport                MeterMeasurand = "Current.Import"
+	MeterMeasurandCurrentOffered               MeterMeasurand = "Current.Offered"
+	MeterMeasurandEnergyActiveExportRegister   MeterMeasurand = "Energy.Active.Export.Register"
+	MeterMeasurandEnergyActiveImportRegister   MeterMeasurand = "Energy.Active.Import.Register"
+	MeterMeasurandEnergyReactiveExportRegister MeterMeasurand = "Energy.Reactive.Export.Register"
+	MeterMeasurandEnergyReactiveImportRegister MeterMeasurand = "Energy.Reactive.Import.Register"
+	MeterMeasurandEnergyActiveExportInterval   MeterMeasurand = "Energy.Active.Export.Interval"
+	MeterMeasurandEnergyActiveImportInterval   MeterMeasurand = "Energy.Active.Import.Interval"
+	MeterMeasurandEnergyReactiveExportInterval MeterMeasurand = "Energy.Reactive.Export.Interval"
+	MeterMeasurandEnergyReactiveImportInterval MeterMeasurand = "Energy.Reactive.Import.Interval"
+	MeterMeasurandFrequency                    MeterMeasurand = "Frequency"
+	MeterMeasurandPowerActiveExport            MeterMeasurand = "Power.Active.Export"
+	MeterMeasurandPowerActiveImport            MeterMeasurand = "Power.Active.Import"
+	MeterMeasurandPowerFactor                  MeterMeasurand = "Power.Factor"
+	MeterMeasurandPowerOffered                 MeterMeasurand = "Power.Offered"
+	MeterMeasurandPowerReactiveExport          MeterMeasurand = "Power.Reactive.Export"
+	MeterMeasurandPowerReactiveImport          MeterMeasurand = "Power.Reactive.Import"
+	MeterMeasurandRPM                          MeterMeasurand = "RPM"
+	MeterMeasurandSoC                          MeterMeasurand = "SoC"
+	MeterMeasurandTemperature                  MeterMeasurand = "Temperature"
+	MeterMeasurandVoltage                      MeterMeasurand = "Voltage"
+)
+
+func (e *MeterMeasurand) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MeterMeasurand(s)
+	case string:
+		*e = MeterMeasurand(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MeterMeasurand: %T", src)
+	}
+	return nil
+}
+
+type NullMeterMeasurand struct {
+	MeterMeasurand MeterMeasurand
+	Valid          bool // Valid is true if MeterMeasurand is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMeterMeasurand) Scan(value interface{}) error {
+	if value == nil {
+		ns.MeterMeasurand, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MeterMeasurand.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMeterMeasurand) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MeterMeasurand), nil
+}
+
+type MeterPhase string
+
+const (
+	MeterPhaseL1   MeterPhase = "L1"
+	MeterPhaseL2   MeterPhase = "L2"
+	MeterPhaseL3   MeterPhase = "L3"
+	MeterPhaseN    MeterPhase = "N"
+	MeterPhaseL1N  MeterPhase = "L1-N"
+	MeterPhaseL2N  MeterPhase = "L2-N"
+	MeterPhaseL3N  MeterPhase = "L3-N"
+	MeterPhaseL1L2 MeterPhase = "L1-L2"
+	MeterPhaseL2L3 MeterPhase = "L2-L3"
+	MeterPhaseL3L1 MeterPhase = "L3-L1"
+)
+
+func (e *MeterPhase) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MeterPhase(s)
+	case string:
+		*e = MeterPhase(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MeterPhase: %T", src)
+	}
+	return nil
+}
+
+type NullMeterPhase struct {
+	MeterPhase MeterPhase
+	Valid      bool // Valid is true if MeterPhase is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMeterPhase) Scan(value interface{}) error {
+	if value == nil {
+		ns.MeterPhase, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MeterPhase.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMeterPhase) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MeterPhase), nil
+}
+
+type MeterReadingContext string
+
+const (
+	MeterReadingContextInterruptionBegin MeterReadingContext = "Interruption.Begin"
+	MeterReadingContextInterruptionEnd   MeterReadingContext = "Interruption.End"
+	MeterReadingContextOther             MeterReadingContext = "Other"
+	MeterReadingContextSampleClock       MeterReadingContext = "Sample.Clock"
+	MeterReadingContextSamplePeriodic    MeterReadingContext = "Sample.Periodic"
+	MeterReadingContextTransactionBegin  MeterReadingContext = "Transaction.Begin"
+	MeterReadingContextTransactionEnd    MeterReadingContext = "Transaction.End"
+	MeterReadingContextTrigger           MeterReadingContext = "Trigger"
+)
+
+func (e *MeterReadingContext) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MeterReadingContext(s)
+	case string:
+		*e = MeterReadingContext(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MeterReadingContext: %T", src)
+	}
+	return nil
+}
+
+type NullMeterReadingContext struct {
+	MeterReadingContext MeterReadingContext
+	Valid               bool // Valid is true if MeterReadingContext is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMeterReadingContext) Scan(value interface{}) error {
+	if value == nil {
+		ns.MeterReadingContext, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MeterReadingContext.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMeterReadingContext) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MeterReadingContext), nil
+}
+
+type MeterUnitOfMeasure string
+
+const (
+	MeterUnitOfMeasureWh         MeterUnitOfMeasure = "Wh"
+	MeterUnitOfMeasureKWh        MeterUnitOfMeasure = "kWh"
+	MeterUnitOfMeasureVarh       MeterUnitOfMeasure = "varh"
+	MeterUnitOfMeasureKvarh      MeterUnitOfMeasure = "kvarh"
+	MeterUnitOfMeasureW          MeterUnitOfMeasure = "W"
+	MeterUnitOfMeasureKW         MeterUnitOfMeasure = "kW"
+	MeterUnitOfMeasureVA         MeterUnitOfMeasure = "VA"
+	MeterUnitOfMeasureKVA        MeterUnitOfMeasure = "kVA"
+	MeterUnitOfMeasureVar        MeterUnitOfMeasure = "var"
+	MeterUnitOfMeasureKvar       MeterUnitOfMeasure = "kvar"
+	MeterUnitOfMeasureA          MeterUnitOfMeasure = "A"
+	MeterUnitOfMeasureV          MeterUnitOfMeasure = "V"
+	MeterUnitOfMeasureCelsius    MeterUnitOfMeasure = "Celsius"
+	MeterUnitOfMeasureFahrenheit MeterUnitOfMeasure = "Fahrenheit"
+	MeterUnitOfMeasureK          MeterUnitOfMeasure = "K"
+	MeterUnitOfMeasurePercent    MeterUnitOfMeasure = "Percent"
+)
+
+func (e *MeterUnitOfMeasure) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MeterUnitOfMeasure(s)
+	case string:
+		*e = MeterUnitOfMeasure(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MeterUnitOfMeasure: %T", src)
+	}
+	return nil
+}
+
+type NullMeterUnitOfMeasure struct {
+	MeterUnitOfMeasure MeterUnitOfMeasure
+	Valid              bool // Valid is true if MeterUnitOfMeasure is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMeterUnitOfMeasure) Scan(value interface{}) error {
+	if value == nil {
+		ns.MeterUnitOfMeasure, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MeterUnitOfMeasure.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMeterUnitOfMeasure) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MeterUnitOfMeasure), nil
+}
+
+type MeterValueFormat string
+
+const (
+	MeterValueFormatRaw        MeterValueFormat = "Raw"
+	MeterValueFormatSignedData MeterValueFormat = "SignedData"
+)
+
+func (e *MeterValueFormat) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MeterValueFormat(s)
+	case string:
+		*e = MeterValueFormat(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MeterValueFormat: %T", src)
+	}
+	return nil
+}
+
+type NullMeterValueFormat struct {
+	MeterValueFormat MeterValueFormat
+	Valid            bool // Valid is true if MeterValueFormat is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMeterValueFormat) Scan(value interface{}) error {
+	if value == nil {
+		ns.MeterValueFormat, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MeterValueFormat.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMeterValueFormat) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MeterValueFormat), nil
+}
+
 type ReservationStatus string
 
 const (
@@ -358,6 +661,23 @@ type Connector struct {
 	VendorErrorCode sql.NullString       `db:"vendor_error_code" json:"vendorErrorCode"`
 	CreatedAt       time.Time            `db:"created_at" json:"createdAt"`
 	UpdatedAt       time.Time            `db:"updated_at" json:"updatedAt"`
+}
+
+type MeterValue struct {
+	ID              int64                  `db:"id" json:"id"`
+	ConnectorID     int32                  `db:"connector_id" json:"connectorID"`
+	ChargePointID   int64                  `db:"charge_point_id" json:"chargePointID"`
+	TransactionID   sql.NullInt64          `db:"transaction_id" json:"transactionID"`
+	Format          MeterValueFormat       `db:"format" json:"format"`
+	Context         MeterReadingContext    `db:"context" json:"context"`
+	Measurand       MeterMeasurand         `db:"measurand" json:"measurand"`
+	Phase           NullMeterPhase         `db:"phase" json:"phase"`
+	Location        MeterLocation          `db:"location" json:"location"`
+	Unit            NullMeterUnitOfMeasure `db:"unit" json:"unit"`
+	RawValue        sql.NullFloat64        `db:"raw_value" json:"rawValue"`
+	SignedDataValue sql.NullString         `db:"signed_data_value" json:"signedDataValue"`
+	Timestamp       time.Time              `db:"timestamp" json:"timestamp"`
+	CreatedAt       time.Time              `db:"created_at" json:"createdAt"`
 }
 
 type Reservation struct {

@@ -31,13 +31,15 @@ func (s *Ocpp) processPacket(packet *ws.Packet) {
 func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 	switch message.Action {
 	case db.CallActionBootNotification:
-		s.bootNotification.ProcessReq(client, message)
+		s.bootNotification.BootNotificationReq(client, message)
 	case db.CallActionHeartbeat:
-		s.heartbeat.ProcessReq(client, message)
+		s.heartbeat.HeartbeatReq(client, message)
+	case db.CallActionMeterValues:
+		s.meterValue.MeterValueReq(client, message)
 	case db.CallActionStartTransaction:
 		s.transaction.StartTransactionReq(client, message)
 	case db.CallActionStatusNotification:
-		s.statusNotification.ProcessReq(client, message)
+		s.statusNotification.StatusNotificationReq(client, message)
 	default:
 		callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeNotSupported, "", nil)
 		callError.Send(client)
@@ -55,9 +57,9 @@ func (s *Ocpp) processCallResult(client *ws.Client, message types.Message) {
 	if call, err := s.call.Find(client, message); err != nil {
 		switch call.Action {
 		case db.CallActionReserveNow:
-			s.reserverNow.ProcessConf(client, message)
+			s.reserverNow.ReserveNowConf(client, message)
 		case db.CallActionTriggerMessage:
-			s.triggerMessage.ProcessConf(client, message)
+			s.triggerMessage.TriggerMessageConf(client, message)
 		}
 	}
 }

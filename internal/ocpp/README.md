@@ -1,0 +1,30 @@
+### Implementation Progress
+
+- [ ] Authorize
+- [x] BootNotification
+- [ ] CancelReservation
+- [ ] ChangeAvailability
+- [ ] ChangeConfiguration
+- [ ] ClearCache
+- [ ] ClearChargingProfile
+- [ ] DataTransfer
+- [ ] DiagnosticsStatusNotification
+- [ ] FirmwareStatusNotification
+- [ ] GetCompositeSchedule
+- [ ] GetConfiguration
+- [ ] GetDiagnostics
+- [ ] GetLocalListVersion
+- [x] Heartbeat
+- [x] MeterValues
+- [ ] RemoteStartTransaction
+- [ ] RemoteStopTransaction
+- [ ] ReserveNow
+- [ ] Reset
+- [ ] SendLocalList
+- [ ] SetChargingProfile
+- [x] StartTransaction
+- [x] StatusNotification
+- [ ] StopTransaction
+- [x] TriggerMessage
+- [ ] UnlockConnector
+- [ ] UpdateFirmware
