@@ -11,6 +11,51 @@ import (
 	"time"
 )
 
+type AuthorizationStatus string
+
+const (
+	AuthorizationStatusAccepted     AuthorizationStatus = "Accepted"
+	AuthorizationStatusBlocked      AuthorizationStatus = "Blocked"
+	AuthorizationStatusExpired      AuthorizationStatus = "Expired"
+	AuthorizationStatusInvalid      AuthorizationStatus = "Invalid"
+	AuthorizationStatusConcurrentTx AuthorizationStatus = "ConcurrentTx"
+)
+
+func (e *AuthorizationStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AuthorizationStatus(s)
+	case string:
+		*e = AuthorizationStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AuthorizationStatus: %T", src)
+	}
+	return nil
+}
+
+type NullAuthorizationStatus struct {
+	AuthorizationStatus AuthorizationStatus
+	Valid               bool // Valid is true if AuthorizationStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAuthorizationStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.AuthorizationStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AuthorizationStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAuthorizationStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AuthorizationStatus), nil
+}
+
 type CallAction string
 
 const (
@@ -662,6 +707,15 @@ type Connector struct {
 	VendorErrorCode sql.NullString       `db:"vendor_error_code" json:"vendorErrorCode"`
 	CreatedAt       time.Time            `db:"created_at" json:"createdAt"`
 	UpdatedAt       time.Time            `db:"updated_at" json:"updatedAt"`
+}
+
+type IDTag struct {
+	ID            int64               `db:"id" json:"id"`
+	ParentIDTagID sql.NullInt64       `db:"parent_id_tag_id" json:"parentIDTagID"`
+	Token         string              `db:"token" json:"token"`
+	Status        AuthorizationStatus `db:"status" json:"status"`
+	CreatedAt     time.Time           `db:"created_at" json:"createdAt"`
+	UpdatedAt     time.Time           `db:"updated_at" json:"updatedAt"`
 }
 
 type MeterValue struct {

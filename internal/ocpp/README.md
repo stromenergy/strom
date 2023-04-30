@@ -1,6 +1,6 @@
 ### Implementation Progress
 
-- [ ] Authorize
+- [x] Authorize
 - [x] BootNotification
 - [ ] CancelReservation
 - [ ] ChangeAvailability

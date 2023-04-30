@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/db"
+	"github.com/stromenergy/strom/internal/ocpp/authorization"
 	"github.com/stromenergy/strom/internal/ocpp/bootnotification"
 	"github.com/stromenergy/strom/internal/ocpp/call"
 	"github.com/stromenergy/strom/internal/ocpp/heartbeat"
@@ -34,6 +35,7 @@ type Ocpp struct {
 	unregister chan *ws.Client
 	// Services
 	call               *call.Call
+	authorization      *authorization.Authorization
 	bootNotification   *bootnotification.BootNotification
 	heartbeat          *heartbeat.Heartbeat
 	meterValue         *metervalue.MeterValue
@@ -44,6 +46,7 @@ type Ocpp struct {
 }
 
 func NewService(repository *db.Repository) OcppInterface {
+	authorization := authorization.NewService(repository)
 	callService := call.NewService(repository)
 	meterValue := metervalue.NewService(repository)
 	triggerMessageService := triggermessage.NewService(repository, callService)
@@ -56,13 +59,14 @@ func NewService(repository *db.Repository) OcppInterface {
 		unregister: make(chan *ws.Client),
 		clients:    make(map[*ws.Client]bool),
 		// Services
-		call:               callService,
+		authorization:      authorization,
 		bootNotification:   bootnotification.NewService(repository, triggerMessageService),
+		call:               callService,
 		heartbeat:          heartbeat.NewService(repository),
 		meterValue:         meterValue,
 		reserverNow:        reservenow.NewService(repository, callService),
 		statusNotification: statusnotification.NewService(repository),
-		transaction:        transaction.NewService(repository, meterValue),
+		transaction:        transaction.NewService(repository, authorization, meterValue),
 		triggerMessage:     triggerMessageService,
 	}
 }

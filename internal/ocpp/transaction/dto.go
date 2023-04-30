@@ -5,15 +5,10 @@ import (
 	"errors"
 
 	"github.com/stromenergy/strom/internal/db"
+	"github.com/stromenergy/strom/internal/ocpp/authorization"
 	"github.com/stromenergy/strom/internal/ocpp/metervalue"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 )
-
-type IDTagInfo struct {
-	ExpiryDate  *types.OcppTime           `json:"expiryDate,omitempty"`
-	ParentIDTag *string                   `json:"parentIdTag,omitempty"`
-	Status      types.AuthorizationStatus `json:"status"`
-}
 
 type StartTransactionReq struct {
 	ConnectorID   int32          `json:"connectorId"`
@@ -24,8 +19,8 @@ type StartTransactionReq struct {
 }
 
 type StartTransactionConf struct {
-	IDTagInfo     IDTagInfo `json:"idTagInfo"`
-	TransactionID int64     `json:"transactionId"`
+	IDTagInfo     authorization.IDTagInfo `json:"idTagInfo"`
+	TransactionID int64                   `json:"transactionId"`
 }
 
 func unmarshalStartTransactionReq(payload interface{}) (*StartTransactionReq, error) {
@@ -53,7 +48,7 @@ type StopTransactionReq struct {
 }
 
 type StopTransactionConf struct {
-	IDTagInfo *IDTagInfo `json:"idTagInfo,omitempty"`
+	IDTagInfo *authorization.IDTagInfo `json:"idTagInfo,omitempty"`
 }
 
 func unmarshalStopTransactionReq(payload interface{}) (*StopTransactionReq, error) {

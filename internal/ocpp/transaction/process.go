@@ -40,11 +40,10 @@ func (s *Transaction) StartTransactionReq(client *ws.Client, message types.Messa
 		return
 	}
 
-	// TODO: Authenticate IDTag against tags table
+	idTagInfo := s.authorization.GetIDTagInfo(ctx, startTransactionReq.IDTag, db.AuthorizationStatusAccepted)
+
 	startTransactionConf := StartTransactionConf{
-		IDTagInfo: IDTagInfo{
-			Status: types.AuthorizationStatusAccepted,
-		},
+		IDTagInfo:     idTagInfo,
 		TransactionID: transaction.ID,
 	}
 
@@ -95,10 +94,11 @@ func (s *Transaction) StopTransactionReq(client *ws.Client, message types.Messag
 		return
 	}
 
-	stopTransactionConf := StopTransactionConf{
-		IDTagInfo: &IDTagInfo{
-			Status: types.AuthorizationStatusExpired,
-		},
+	stopTransactionConf := StopTransactionConf{}
+
+	if stopTransactionReq.IDTag != nil {
+		idTagInfo := s.authorization.GetIDTagInfo(ctx, *stopTransactionReq.IDTag, db.AuthorizationStatusExpired)
+		stopTransactionConf.IDTagInfo = &idTagInfo
 	}
 
 	callResult := types.NewMessageCallResult(message.UniqueID, stopTransactionConf)

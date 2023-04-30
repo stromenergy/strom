@@ -30,6 +30,8 @@ func (s *Ocpp) processPacket(packet *ws.Packet) {
 
 func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 	switch message.Action {
+	case db.CallActionAuthorize:
+		s.authorization.AuthorizeReq(client, message)
 	case db.CallActionBootNotification:
 		s.bootNotification.BootNotificationReq(client, message)
 	case db.CallActionHeartbeat:
