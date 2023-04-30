@@ -24,7 +24,7 @@
 - [ ] SetChargingProfile
 - [x] StartTransaction
 - [x] StatusNotification
-- [ ] StopTransaction
+- [x] StopTransaction
 - [x] TriggerMessage
 - [ ] UnlockConnector
 - [ ] UpdateFirmware

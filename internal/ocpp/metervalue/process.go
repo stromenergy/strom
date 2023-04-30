@@ -28,18 +28,22 @@ func (s *MeterValue) MeterValueReq(client *ws.Client, message types.Message) {
 		return
 	}
 
-	for _, meteredValue := range meterValueReq.MeterValue {
+	s.ProcessMeterValues(ctx, chargePoint.ID, meterValueReq.ConnectorID, meterValueReq.TransactionID, meterValueReq.MeterValue)
+
+	callResult := types.NewMessageCallResult(message.UniqueID, MeterValueConf{})
+	callResult.Send(client)
+
+	// TODO: Notify UI of changes
+}
+
+func (s *MeterValue) ProcessMeterValues(ctx context.Context, chargePointID int64, connectorID int32, transactionID *int64, meterValues []MeteredValue) {
+	for _, meteredValue := range meterValues {
 		for _, sampledValue := range meteredValue.SampledValue {
-			createMeterValueParams := createMeterValueParams(chargePoint.ID, meterValueReq, meteredValue, sampledValue)
+			createMeterValueParams := createMeterValueParams(chargePointID, connectorID, transactionID, meteredValue, sampledValue)
 			
 			if _, err := s.repository.CreateMeterValue(ctx, createMeterValueParams); err != nil {
 				util.LogError("STR051: Error creating meter value", err)
 			}
 		}
 	}
-
-	callResult := types.NewMessageCallResult(message.UniqueID, MeterValueConf{})
-	callResult.Send(client)
-
-	// TODO: Notify UI of changes
 }

@@ -141,7 +141,7 @@ UPDATE transactions SET (
     meter_stop,
     stop_timestamp,
     updated_at
-  ) = ($2, $3, $4, $5)
+  ) = ($2, $3, $4, $5, $6)
   WHERE id = $1
   RETURNING id, connector_id, charge_point_id, reservation_id, status, id_tag, reason, meter_start, meter_stop, start_timestamp, stop_timestamp, created_at, updated_at
 `
@@ -152,6 +152,7 @@ type UpdateTransactionParams struct {
 	Reason        NullTransactionStopReason `db:"reason" json:"reason"`
 	MeterStop     sql.NullInt32             `db:"meter_stop" json:"meterStop"`
 	StopTimestamp sql.NullTime              `db:"stop_timestamp" json:"stopTimestamp"`
+	UpdatedAt     time.Time                 `db:"updated_at" json:"updatedAt"`
 }
 
 func (q *Queries) UpdateTransaction(ctx context.Context, arg UpdateTransactionParams) (Transaction, error) {
@@ -161,6 +162,7 @@ func (q *Queries) UpdateTransaction(ctx context.Context, arg UpdateTransactionPa
 		arg.Reason,
 		arg.MeterStop,
 		arg.StopTimestamp,
+		arg.UpdatedAt,
 	)
 	var i Transaction
 	err := row.Scan(

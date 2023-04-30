@@ -8,6 +8,7 @@ CREATE TYPE transaction_stop_reason AS ENUM (
     'EmergencyStop',
 	'EVDisconnected',
 	'HardReset',
+    'Local',
 	'Other',
 	'Outlet',
 	'PowerLoss',

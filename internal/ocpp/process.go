@@ -40,6 +40,8 @@ func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 		s.transaction.StartTransactionReq(client, message)
 	case db.CallActionStatusNotification:
 		s.statusNotification.StatusNotificationReq(client, message)
+	case db.CallActionStopTransaction:
+		s.transaction.StopTransactionReq(client, message)
 	default:
 		callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeNotSupported, "", nil)
 		callError.Send(client)

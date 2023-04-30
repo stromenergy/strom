@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/stromenergy/strom/internal/db"
+	"github.com/stromenergy/strom/internal/ocpp/metervalue"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 )
 
@@ -39,4 +41,32 @@ func unmarshalStartTransactionReq(payload interface{}) (*StartTransactionReq, er
 	}
 
 	return startTransactionReq, nil
+}
+
+type StopTransactionReq struct {
+	IDTag           *string                   `json:"idTag,omitempty"`
+	MeterStop       int32                     `json:"meterStop"`
+	Timestamp       types.OcppTime            `json:"timestamp"`
+	TransactionID   int64                     `json:"transactionId"`
+	Reason          *db.TransactionStopReason `json:"reason,omitempty"`
+	TransactionData []metervalue.MeteredValue `json:"transactionData,omitempty"`
+}
+
+type StopTransactionConf struct {
+	IDTagInfo *IDTagInfo `json:"idTagInfo,omitempty"`
+}
+
+func unmarshalStopTransactionReq(payload interface{}) (*StopTransactionReq, error) {
+	stopTransactionReq := &StopTransactionReq{}
+
+	switch typedPayload := payload.(type) {
+	case []byte:
+		if err := json.Unmarshal(typedPayload, stopTransactionReq); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid type")
+	}
+
+	return stopTransactionReq, nil
 }

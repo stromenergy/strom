@@ -19,3 +19,15 @@ func createTransactionParams(chargePointID int64, startTransactionReq *StartTran
 		UpdatedAt:      time.Now(),
 	}
 }
+
+func defaultReason(reason *db.TransactionStopReason) db.NullTransactionStopReason {
+	nullReason := db.NullTransactionStopReason{}
+
+	if reason == nil {
+		nullReason.Scan(string(db.TransactionStopReasonLocal))
+	} else {
+		nullReason.Scan(reason)
+	}
+
+	return nullReason
+}

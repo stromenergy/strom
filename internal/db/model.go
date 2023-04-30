@@ -582,6 +582,7 @@ const (
 	TransactionStopReasonEmergencyStop  TransactionStopReason = "EmergencyStop"
 	TransactionStopReasonEVDisconnected TransactionStopReason = "EVDisconnected"
 	TransactionStopReasonHardReset      TransactionStopReason = "HardReset"
+	TransactionStopReasonLocal          TransactionStopReason = "Local"
 	TransactionStopReasonOther          TransactionStopReason = "Other"
 	TransactionStopReasonOutlet         TransactionStopReason = "Outlet"
 	TransactionStopReasonPowerLoss      TransactionStopReason = "PowerLoss"

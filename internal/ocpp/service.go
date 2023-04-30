@@ -45,6 +45,7 @@ type Ocpp struct {
 
 func NewService(repository *db.Repository) OcppInterface {
 	callService := call.NewService(repository)
+	meterValue := metervalue.NewService(repository)
 	triggerMessageService := triggermessage.NewService(repository, callService)
 
 	return &Ocpp{
@@ -58,10 +59,10 @@ func NewService(repository *db.Repository) OcppInterface {
 		call:               callService,
 		bootNotification:   bootnotification.NewService(repository, triggerMessageService),
 		heartbeat:          heartbeat.NewService(repository),
-		meterValue:         metervalue.NewService(repository),
+		meterValue:         meterValue,
 		reserverNow:        reservenow.NewService(repository, callService),
 		statusNotification: statusnotification.NewService(repository),
-		transaction:        transaction.NewService(repository),
+		transaction:        transaction.NewService(repository, meterValue),
 		triggerMessage:     triggerMessageService,
 	}
 }

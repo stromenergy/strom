@@ -9,14 +9,14 @@ import (
 	"github.com/stromenergy/strom/internal/util"
 )
 
-func createMeterValueParams(chargePointID int64, meterValueReq *MeterValueReq, meteredValue MeteredValue, sampledValue SampledValue) db.CreateMeterValueParams {
+func createMeterValueParams(chargePointID int64, connectorID int32, transactionID *int64, meteredValue MeteredValue, sampledValue SampledValue) db.CreateMeterValueParams {
 	format, rawValue, signedValue := defaultFormat(sampledValue.Format, sampledValue.Value)
 	measurand := defaultMeasurand(sampledValue.Measurand)
 
 	return db.CreateMeterValueParams{
 		ChargePointID:   chargePointID,
-		ConnectorID:     meterValueReq.ConnectorID,
-		TransactionID:   util.SqlNullInt64(meterValueReq.TransactionID),
+		ConnectorID:     connectorID,
+		TransactionID:   util.SqlNullInt64(transactionID),
 		Format:          format,
 		Context:         defaultContext(sampledValue.Context),
 		Measurand:       measurand,
