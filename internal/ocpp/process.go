@@ -36,6 +36,10 @@ func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 		s.notification.BootNotificationReq(client, message)
 	case db.CallActionDataTransfer:
 		s.dataTransfer.DataTransferReq(client, message)
+	case db.CallActionDiagnosticsStatusNotification:
+		s.diagnostic.DiagnosticsStatusNotificationReq(client, message)
+	case db.CallActionFirmwareStatusNotification:
+		s.firmware.FirmwareStatusNotificationReq(client, message)
 	case db.CallActionHeartbeat:
 		s.heartbeat.HeartbeatReq(client, message)
 	case db.CallActionMeterValues:

@@ -9,6 +9,15 @@ const (
 	DataTransferStatusUnknownVendorId  DataTransferStatus = "UnknownVendorId"
 )
 
+type DiagnosticsStatus string
+
+const (
+	DiagnosticsStatusIdle         DiagnosticsStatus = "Idle"
+	DiagnosticsStatusUploaded     DiagnosticsStatus = "Uploaded"
+	DiagnosticsStatusUploadFailed DiagnosticsStatus = "UploadFailed"
+	DiagnosticsStatusUploading    DiagnosticsStatus = "Uploading"
+)
+
 type ErrorCode string
 
 const (
@@ -22,6 +31,18 @@ const (
 	ErrorCodeOccurenceConstraintViolation ErrorCode = "OccurenceConstraintViolation"
 	ErrorCodeTypeConstraintViolation      ErrorCode = "TypeConstraintViolation"
 	ErrorCodeGenericError                 ErrorCode = "GenericError"
+)
+
+type FirmwareStatus string
+
+const (
+	FirmwareStatusDownloaded         FirmwareStatus = "Downloaded"
+	FirmwareStatusDownloadFailed     FirmwareStatus = "DownloadFailed"
+	FirmwareStatusDownloading        FirmwareStatus = "Downloading"
+	FirmwareStatusIdle               FirmwareStatus = "Idle"
+	FirmwareStatusInstallationFailed FirmwareStatus = "InstallationFailed"
+	FirmwareStatusInstalling         FirmwareStatus = "Installing"
+	FirmwareStatusInstalled          FirmwareStatus = "Installed"
 )
 
 type MessageType int

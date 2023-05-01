@@ -7,9 +7,9 @@
 - [ ] ChangeConfiguration
 - [ ] ClearCache
 - [ ] ClearChargingProfile
-- [ ] DataTransfer
-- [ ] DiagnosticsStatusNotification
-- [ ] FirmwareStatusNotification
+- [x] DataTransfer
+- [x] DiagnosticsStatusNotification
+- [x] FirmwareStatusNotification
 - [ ] GetCompositeSchedule
 - [ ] GetConfiguration
 - [ ] GetDiagnostics
