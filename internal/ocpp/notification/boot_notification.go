@@ -1,4 +1,4 @@
-package bootnotification
+package notification
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *BootNotification) BootNotificationReq(client *ws.Client, message types.Message) {
+func (s *Notification) BootNotificationReq(client *ws.Client, message types.Message) {
 	bootNotificationReq, err := unmarshalBootNotificationReq(message.Payload)
 
 	if err != nil {

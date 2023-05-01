@@ -18,7 +18,7 @@
 - [x] MeterValues
 - [ ] RemoteStartTransaction
 - [ ] RemoteStopTransaction
-- [ ] ReserveNow
+- [x] ReserveNow
 - [ ] Reset
 - [ ] SendLocalList
 - [ ] SetChargingProfile

@@ -33,7 +33,7 @@ func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 	case db.CallActionAuthorize:
 		s.authorization.AuthorizeReq(client, message)
 	case db.CallActionBootNotification:
-		s.bootNotification.BootNotificationReq(client, message)
+		s.notification.BootNotificationReq(client, message)
 	case db.CallActionHeartbeat:
 		s.heartbeat.HeartbeatReq(client, message)
 	case db.CallActionMeterValues:
@@ -41,7 +41,7 @@ func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 	case db.CallActionStartTransaction:
 		s.transaction.StartTransactionReq(client, message)
 	case db.CallActionStatusNotification:
-		s.statusNotification.StatusNotificationReq(client, message)
+		s.notification.StatusNotificationReq(client, message)
 	case db.CallActionStopTransaction:
 		s.transaction.StopTransactionReq(client, message)
 	default:

@@ -8,12 +8,11 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/ocpp/authorization"
-	"github.com/stromenergy/strom/internal/ocpp/bootnotification"
 	"github.com/stromenergy/strom/internal/ocpp/call"
 	"github.com/stromenergy/strom/internal/ocpp/heartbeat"
 	"github.com/stromenergy/strom/internal/ocpp/metervalue"
+	"github.com/stromenergy/strom/internal/ocpp/notification"
 	"github.com/stromenergy/strom/internal/ocpp/reservenow"
-	"github.com/stromenergy/strom/internal/ocpp/statusnotification"
 	"github.com/stromenergy/strom/internal/ocpp/transaction"
 	"github.com/stromenergy/strom/internal/ocpp/triggermessage"
 	"github.com/stromenergy/strom/internal/ws"
@@ -34,15 +33,14 @@ type Ocpp struct {
 	register   chan *ws.Client
 	unregister chan *ws.Client
 	// Services
-	call               *call.Call
-	authorization      *authorization.Authorization
-	bootNotification   *bootnotification.BootNotification
-	heartbeat          *heartbeat.Heartbeat
-	meterValue         *metervalue.MeterValue
-	reserverNow        *reservenow.ReserveNow
-	statusNotification *statusnotification.StatusNotification
-	transaction        *transaction.Transaction
-	triggerMessage     *triggermessage.TriggerMessage
+	call           *call.Call
+	authorization  *authorization.Authorization
+	heartbeat      *heartbeat.Heartbeat
+	meterValue     *metervalue.MeterValue
+	notification   *notification.Notification
+	reserverNow    *reservenow.ReserveNow
+	transaction    *transaction.Transaction
+	triggerMessage *triggermessage.TriggerMessage
 }
 
 func NewService(repository *db.Repository) OcppInterface {
@@ -59,15 +57,14 @@ func NewService(repository *db.Repository) OcppInterface {
 		unregister: make(chan *ws.Client),
 		clients:    make(map[*ws.Client]bool),
 		// Services
-		authorization:      authorization,
-		bootNotification:   bootnotification.NewService(repository, triggerMessageService),
-		call:               callService,
-		heartbeat:          heartbeat.NewService(repository),
-		meterValue:         meterValue,
-		reserverNow:        reservenow.NewService(repository, callService),
-		statusNotification: statusnotification.NewService(repository),
-		transaction:        transaction.NewService(repository, authorization, meterValue),
-		triggerMessage:     triggerMessageService,
+		authorization:  authorization,
+		call:           callService,
+		heartbeat:      heartbeat.NewService(repository),
+		meterValue:     meterValue,
+		notification:   notification.NewService(repository, triggerMessageService),
+		reserverNow:    reservenow.NewService(repository, callService),
+		transaction:    transaction.NewService(repository, authorization, meterValue),
+		triggerMessage: triggerMessageService,
 	}
 }
 

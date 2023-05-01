@@ -1,4 +1,4 @@
-package statusnotification
+package notification
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *StatusNotification) StatusNotificationReq(client *ws.Client, message types.Message) {
+func (s *Notification) StatusNotificationReq(client *ws.Client, message types.Message) {
 	statusNotificationReq, err := unmarshalStatusNotificationReq(message.Payload)
 
 	if err != nil {

@@ -19,6 +19,7 @@ func (s *ReserveNow) Request(client *ws.Client, connectorId int32, expiryDate ti
 		return
 	}
 
+	// TODO: check IDTag can make reservation
 	if call, err := s.call.Create(chargePoint.ID, db.CallActionTriggerMessage); err == nil {
 		createReservationParams := db.CreateReservationParams{
 			ChargePointID: chargePoint.ID,
