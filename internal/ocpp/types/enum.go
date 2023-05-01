@@ -1,5 +1,14 @@
 package types
 
+type DataTransferStatus string
+
+const (
+	DataTransferStatusAccepted         DataTransferStatus = "Accepted"
+	DataTransferStatusRejected         DataTransferStatus = "Rejected"
+	DataTransferStatusUnknownMessageId DataTransferStatus = "UnknownMessageId"
+	DataTransferStatusUnknownVendorId  DataTransferStatus = "UnknownVendorId"
+)
+
 type ErrorCode string
 
 const (

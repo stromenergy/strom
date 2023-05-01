@@ -17,7 +17,7 @@ func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
 	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 
 	if err != nil {
-		util.LogError("STR018: Error upgrading websocket", err)
+		util.LogError("STR001: Error upgrading websocket", err)
 		return
 	}
 

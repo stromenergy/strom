@@ -20,7 +20,7 @@ func (s *Heartbeat) HeartbeatReq(client *ws.Client, message types.Message) {
 		_, err = s.repository.UpdateChargePoint(ctx, updateChargePointParams)
 
 		if err != nil {
-			util.LogError("5: Error updating charge point", err)
+			util.LogError("STR002: Error updating charge point", err)
 			callError := types.NewMessageCallError(message.UniqueID, types.ErrorCodeInternalError, "", types.NoError{})
 			callError.Send(client)
 			return

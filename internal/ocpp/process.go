@@ -34,6 +34,8 @@ func (s *Ocpp) processCall(client *ws.Client, message types.Message) {
 		s.authorization.AuthorizeReq(client, message)
 	case db.CallActionBootNotification:
 		s.notification.BootNotificationReq(client, message)
+	case db.CallActionDataTransfer:
+		s.dataTransfer.DataTransferReq(client, message)
 	case db.CallActionHeartbeat:
 		s.heartbeat.HeartbeatReq(client, message)
 	case db.CallActionMeterValues:

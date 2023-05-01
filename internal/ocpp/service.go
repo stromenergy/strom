@@ -9,6 +9,7 @@ import (
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/ocpp/authorization"
 	"github.com/stromenergy/strom/internal/ocpp/call"
+	"github.com/stromenergy/strom/internal/ocpp/datatransfer"
 	"github.com/stromenergy/strom/internal/ocpp/heartbeat"
 	"github.com/stromenergy/strom/internal/ocpp/metervalue"
 	"github.com/stromenergy/strom/internal/ocpp/notification"
@@ -35,6 +36,7 @@ type Ocpp struct {
 	// Services
 	call           *call.Call
 	authorization  *authorization.Authorization
+	dataTransfer   *datatransfer.DataTransfer
 	heartbeat      *heartbeat.Heartbeat
 	meterValue     *metervalue.MeterValue
 	notification   *notification.Notification
@@ -59,6 +61,7 @@ func NewService(repository *db.Repository) OcppInterface {
 		// Services
 		authorization:  authorization,
 		call:           callService,
+		dataTransfer:   datatransfer.NewService(repository),
 		heartbeat:      heartbeat.NewService(repository),
 		meterValue:     meterValue,
 		notification:   notification.NewService(repository, triggerMessageService),
