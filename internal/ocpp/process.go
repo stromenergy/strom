@@ -66,8 +66,10 @@ func (s *Ocpp) processCallError(client *ws.Client, message types.Message) {
 func (s *Ocpp) processCallResult(client *ws.Client, message types.Message) {
 	if call, err := s.call.Find(client, message); err != nil {
 		switch call.Action {
+		case db.CallActionCancelReservation:
+			s.reservation.CancelReservationConf(client, message)
 		case db.CallActionReserveNow:
-			s.reserverNow.ReserveNowConf(client, message)
+			s.reservation.ReserveNowConf(client, message)
 		case db.CallActionTriggerMessage:
 			s.triggerMessage.TriggerMessageConf(client, message)
 		}

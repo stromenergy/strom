@@ -153,21 +153,28 @@ func (q *Queries) ListReservations(ctx context.Context) ([]Reservation, error) {
 
 const updateReservation = `-- name: UpdateReservation :one
 UPDATE reservations SET (
+    req_id,
     status,
     updated_at
-  ) = ($2, $3)
+  ) = ($2, $3, $4)
   WHERE id = $1
   RETURNING id, connector_id, charge_point_id, req_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at
 `
 
 type UpdateReservationParams struct {
 	ID        int64             `db:"id" json:"id"`
+	ReqID     string            `db:"req_id" json:"reqID"`
 	Status    ReservationStatus `db:"status" json:"status"`
 	UpdatedAt time.Time         `db:"updated_at" json:"updatedAt"`
 }
 
 func (q *Queries) UpdateReservation(ctx context.Context, arg UpdateReservationParams) (Reservation, error) {
-	row := q.db.QueryRowContext(ctx, updateReservation, arg.ID, arg.Status, arg.UpdatedAt)
+	row := q.db.QueryRowContext(ctx, updateReservation,
+		arg.ID,
+		arg.ReqID,
+		arg.Status,
+		arg.UpdatedAt,
+	)
 	var i Reservation
 	err := row.Scan(
 		&i.ID,

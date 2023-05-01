@@ -26,8 +26,9 @@ SELECT * FROM reservations
 
 -- name: UpdateReservation :one
 UPDATE reservations SET (
+    req_id,
     status,
     updated_at
-  ) = ($2, $3)
+  ) = ($2, $3, $4)
   WHERE id = $1
   RETURNING *;

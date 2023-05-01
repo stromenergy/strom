@@ -1,5 +1,12 @@
 package types
 
+type CancelReservationStatus string
+
+const (
+	CancelReservationStatusAccepted CancelReservationStatus = "Accepted"
+	CancelReservationStatusRejected CancelReservationStatus = "Rejected"
+)
+
 type DataTransferStatus string
 
 const (
