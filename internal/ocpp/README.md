@@ -2,7 +2,7 @@
 
 - [x] Authorize
 - [x] BootNotification
-- [ ] CancelReservation
+- [x] CancelReservation
 - [ ] ChangeAvailability
 - [ ] ChangeConfiguration
 - [ ] ClearCache

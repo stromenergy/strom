@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/util"
 	"github.com/stromenergy/strom/internal/ws"
 )
@@ -14,13 +13,13 @@ type NoError struct{}
 type Message struct {
 	MessageType      MessageType
 	UniqueID         string
-	Action           db.CallAction
+	Action           CallAction
 	ErrorCode        ErrorCode
 	ErrorDescription string
 	Payload          interface{}
 }
 
-func NewMessageCall(uniqueID string, action db.CallAction, payload interface{}) *Message {
+func NewMessageCall(uniqueID string, action CallAction, payload interface{}) *Message {
 	return &Message{
 		MessageType: MessageTypeCall,
 		UniqueID:    uniqueID,

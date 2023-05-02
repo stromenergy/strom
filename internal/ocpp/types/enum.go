@@ -1,5 +1,38 @@
 package types
 
+type CallAction string
+
+const (
+	CallActionAuthorize                     CallAction = "Authorize"
+	CallActionBootNotification              CallAction = "BootNotification"
+	CallActionCancelReservation             CallAction = "CancelReservation"
+	CallActionChangeAvailability            CallAction = "ChangeAvailability"
+	CallActionChangeConfiguration           CallAction = "ChangeConfiguration"
+	CallActionClearCache                    CallAction = "ClearCache"
+	CallActionClearChargingProfile          CallAction = "ClearChargingProfile"
+	CallActionDataTransfer                  CallAction = "DataTransfer"
+	CallActionDiagnosticsStatusNotification CallAction = "DiagnosticsStatusNotification"
+	CallActionFirmwareStatusNotification    CallAction = "FirmwareStatusNotification"
+	CallActionGetCompositeSchedule          CallAction = "GetCompositeSchedule"
+	CallActionGetConfiguration              CallAction = "GetConfiguration"
+	CallActionGetDiagnostics                CallAction = "GetDiagnostics"
+	CallActionGetLocalListVersion           CallAction = "GetLocalListVersion"
+	CallActionHeartbeat                     CallAction = "Heartbeat"
+	CallActionMeterValues                   CallAction = "MeterValues"
+	CallActionRemoteStartTransaction        CallAction = "RemoteStartTransaction"
+	CallActionRemoteStopTransaction         CallAction = "RemoteStopTransaction"
+	CallActionReserveNow                    CallAction = "ReserveNow"
+	CallActionReset                         CallAction = "Reset"
+	CallActionSendLocalList                 CallAction = "SendLocalList"
+	CallActionSetChargingProfile            CallAction = "SetChargingProfile"
+	CallActionStartTransaction              CallAction = "StartTransaction"
+	CallActionStatusNotification            CallAction = "StatusNotification"
+	CallActionStopTransaction               CallAction = "StopTransaction"
+	CallActionTriggerMessage                CallAction = "TriggerMessage"
+	CallActionUnlockConnector               CallAction = "UnlockConnector"
+	CallActionUpdateFirmware                CallAction = "UpdateFirmware"
+)
+
 type CancelReservationStatus string
 
 const (

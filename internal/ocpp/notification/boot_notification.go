@@ -67,6 +67,7 @@ func (s *Notification) BootNotificationReq(client *ws.Client, message types.Mess
 	callResult := types.NewMessageCallResult(message.UniqueID, bootNotificationConf)
 	callResult.Send(client)
 
+	// TODO: Queue the requests
 	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerStatusNotification, nil)
 	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerMeterValues, nil)
 

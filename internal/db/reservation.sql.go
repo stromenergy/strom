@@ -15,21 +15,19 @@ const createReservation = `-- name: CreateReservation :one
 INSERT INTO reservations (
     connector_id,
     charge_point_id,
-    req_id,
     expiry_date,
     status,
     id_tag,
     parent_id_tag,
     created_at,
     updated_at
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-  RETURNING id, connector_id, charge_point_id, req_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  RETURNING id, connector_id, charge_point_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at
 `
 
 type CreateReservationParams struct {
 	ConnectorID   int32             `db:"connector_id" json:"connectorID"`
 	ChargePointID int64             `db:"charge_point_id" json:"chargePointID"`
-	ReqID         string            `db:"req_id" json:"reqID"`
 	ExpiryDate    time.Time         `db:"expiry_date" json:"expiryDate"`
 	Status        ReservationStatus `db:"status" json:"status"`
 	IDTag         string            `db:"id_tag" json:"idTag"`
@@ -42,7 +40,6 @@ func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationPa
 	row := q.db.QueryRowContext(ctx, createReservation,
 		arg.ConnectorID,
 		arg.ChargePointID,
-		arg.ReqID,
 		arg.ExpiryDate,
 		arg.Status,
 		arg.IDTag,
@@ -55,7 +52,6 @@ func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationPa
 		&i.ID,
 		&i.ConnectorID,
 		&i.ChargePointID,
-		&i.ReqID,
 		&i.ExpiryDate,
 		&i.Status,
 		&i.IDTag,
@@ -67,7 +63,7 @@ func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationPa
 }
 
 const getReservation = `-- name: GetReservation :one
-SELECT id, connector_id, charge_point_id, req_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at FROM reservations
+SELECT id, connector_id, charge_point_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at FROM reservations
   WHERE id = $1
 `
 
@@ -78,30 +74,6 @@ func (q *Queries) GetReservation(ctx context.Context, id int64) (Reservation, er
 		&i.ID,
 		&i.ConnectorID,
 		&i.ChargePointID,
-		&i.ReqID,
-		&i.ExpiryDate,
-		&i.Status,
-		&i.IDTag,
-		&i.ParentIDTag,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getReservationByReqID = `-- name: GetReservationByReqID :one
-SELECT id, connector_id, charge_point_id, req_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at FROM reservations
-  WHERE req_id = $1
-`
-
-func (q *Queries) GetReservationByReqID(ctx context.Context, reqID string) (Reservation, error) {
-	row := q.db.QueryRowContext(ctx, getReservationByReqID, reqID)
-	var i Reservation
-	err := row.Scan(
-		&i.ID,
-		&i.ConnectorID,
-		&i.ChargePointID,
-		&i.ReqID,
 		&i.ExpiryDate,
 		&i.Status,
 		&i.IDTag,
@@ -113,7 +85,7 @@ func (q *Queries) GetReservationByReqID(ctx context.Context, reqID string) (Rese
 }
 
 const listReservations = `-- name: ListReservations :many
-SELECT id, connector_id, charge_point_id, req_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at FROM reservations
+SELECT id, connector_id, charge_point_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at FROM reservations
   ORDER BY id
 `
 
@@ -130,7 +102,6 @@ func (q *Queries) ListReservations(ctx context.Context) ([]Reservation, error) {
 			&i.ID,
 			&i.ConnectorID,
 			&i.ChargePointID,
-			&i.ReqID,
 			&i.ExpiryDate,
 			&i.Status,
 			&i.IDTag,
@@ -153,34 +124,26 @@ func (q *Queries) ListReservations(ctx context.Context) ([]Reservation, error) {
 
 const updateReservation = `-- name: UpdateReservation :one
 UPDATE reservations SET (
-    req_id,
     status,
     updated_at
-  ) = ($2, $3, $4)
+  ) = ($2, $3)
   WHERE id = $1
-  RETURNING id, connector_id, charge_point_id, req_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at
+  RETURNING id, connector_id, charge_point_id, expiry_date, status, id_tag, parent_id_tag, created_at, updated_at
 `
 
 type UpdateReservationParams struct {
 	ID        int64             `db:"id" json:"id"`
-	ReqID     string            `db:"req_id" json:"reqID"`
 	Status    ReservationStatus `db:"status" json:"status"`
 	UpdatedAt time.Time         `db:"updated_at" json:"updatedAt"`
 }
 
 func (q *Queries) UpdateReservation(ctx context.Context, arg UpdateReservationParams) (Reservation, error) {
-	row := q.db.QueryRowContext(ctx, updateReservation,
-		arg.ID,
-		arg.ReqID,
-		arg.Status,
-		arg.UpdatedAt,
-	)
+	row := q.db.QueryRowContext(ctx, updateReservation, arg.ID, arg.Status, arg.UpdatedAt)
 	var i Reservation
 	err := row.Scan(
 		&i.ID,
 		&i.ConnectorID,
 		&i.ChargePointID,
-		&i.ReqID,
 		&i.ExpiryDate,
 		&i.Status,
 		&i.IDTag,

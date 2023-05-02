@@ -32,3 +32,18 @@ func unmarshalDataTransferReq(payload interface{}) (*DataTransferReq, error) {
 
 	return dataTransferReq, nil
 }
+
+func unmarshalDataTransferConf(payload interface{}) (*DataTransferConf, error) {
+	dataTransferConf := &DataTransferConf{}
+
+	switch typedPayload := payload.(type) {
+	case []byte:
+		if err := json.Unmarshal(typedPayload, dataTransferConf); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid type")
+	}
+
+	return dataTransferConf, nil
+}

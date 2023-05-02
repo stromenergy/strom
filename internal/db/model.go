@@ -56,74 +56,6 @@ func (ns NullAuthorizationStatus) Value() (driver.Value, error) {
 	return string(ns.AuthorizationStatus), nil
 }
 
-type CallAction string
-
-const (
-	CallActionAuthorize                     CallAction = "Authorize"
-	CallActionBootNotification              CallAction = "BootNotification"
-	CallActionCancelReservation             CallAction = "CancelReservation"
-	CallActionChangeAvailability            CallAction = "ChangeAvailability"
-	CallActionChangeConfiguration           CallAction = "ChangeConfiguration"
-	CallActionClearCache                    CallAction = "ClearCache"
-	CallActionClearChargingProfile          CallAction = "ClearChargingProfile"
-	CallActionDataTransfer                  CallAction = "DataTransfer"
-	CallActionDiagnosticsStatusNotification CallAction = "DiagnosticsStatusNotification"
-	CallActionFirmwareStatusNotification    CallAction = "FirmwareStatusNotification"
-	CallActionGetCompositeSchedule          CallAction = "GetCompositeSchedule"
-	CallActionGetConfiguration              CallAction = "GetConfiguration"
-	CallActionGetDiagnostics                CallAction = "GetDiagnostics"
-	CallActionGetLocalListVersion           CallAction = "GetLocalListVersion"
-	CallActionHeartbeat                     CallAction = "Heartbeat"
-	CallActionMeterValues                   CallAction = "MeterValues"
-	CallActionRemoteStartTransaction        CallAction = "RemoteStartTransaction"
-	CallActionRemoteStopTransaction         CallAction = "RemoteStopTransaction"
-	CallActionReserveNow                    CallAction = "ReserveNow"
-	CallActionReset                         CallAction = "Reset"
-	CallActionSendLocalList                 CallAction = "SendLocalList"
-	CallActionSetChargingProfile            CallAction = "SetChargingProfile"
-	CallActionStartTransaction              CallAction = "StartTransaction"
-	CallActionStatusNotification            CallAction = "StatusNotification"
-	CallActionStopTransaction               CallAction = "StopTransaction"
-	CallActionTriggerMessage                CallAction = "TriggerMessage"
-	CallActionUnlockConnector               CallAction = "UnlockConnector"
-	CallActionUpdateFirmware                CallAction = "UpdateFirmware"
-)
-
-func (e *CallAction) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = CallAction(s)
-	case string:
-		*e = CallAction(s)
-	default:
-		return fmt.Errorf("unsupported scan type for CallAction: %T", src)
-	}
-	return nil
-}
-
-type NullCallAction struct {
-	CallAction CallAction
-	Valid      bool // Valid is true if CallAction is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullCallAction) Scan(value interface{}) error {
-	if value == nil {
-		ns.CallAction, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.CallAction.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullCallAction) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.CallAction), nil
-}
-
 type ChargePointErrorCode string
 
 const (
@@ -673,14 +605,6 @@ func (ns NullTransactionStopReason) Value() (driver.Value, error) {
 	return string(ns.TransactionStopReason), nil
 }
 
-type Call struct {
-	ID            int64      `db:"id" json:"id"`
-	ChargePointID int64      `db:"charge_point_id" json:"chargePointID"`
-	ReqID         string     `db:"req_id" json:"reqID"`
-	Action        CallAction `db:"action" json:"action"`
-	CreatedAt     time.Time  `db:"created_at" json:"createdAt"`
-}
-
 type ChargePoint struct {
 	ID                int64          `db:"id" json:"id"`
 	Identity          string         `db:"identity" json:"identity"`
@@ -739,7 +663,6 @@ type Reservation struct {
 	ID            int64             `db:"id" json:"id"`
 	ConnectorID   int32             `db:"connector_id" json:"connectorID"`
 	ChargePointID int64             `db:"charge_point_id" json:"chargePointID"`
-	ReqID         string            `db:"req_id" json:"reqID"`
 	ExpiryDate    time.Time         `db:"expiry_date" json:"expiryDate"`
 	Status        ReservationStatus `db:"status" json:"status"`
 	IDTag         string            `db:"id_tag" json:"idTag"`

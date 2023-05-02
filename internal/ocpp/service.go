@@ -65,7 +65,7 @@ func NewService(repository *db.Repository) OcppInterface {
 		// Services
 		authorization:  authorization,
 		call:           callService,
-		dataTransfer:   datatransfer.NewService(repository),
+		dataTransfer:   datatransfer.NewService(repository, callService),
 		diagnostic:     diagnostic.NewService(repository),
 		firmware:       firmware.NewService(repository),
 		heartbeat:      heartbeat.NewService(repository),

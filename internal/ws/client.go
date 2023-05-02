@@ -107,7 +107,7 @@ func (c *Client) writer() {
 			c.conn.SetWriteDeadline(time.Now().Add(WRITE_WAIT))
 
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				util.LogError("STR023: Error writing ping message", err)
+				util.LogError("STR031: Error writing ping message", err)
 				return
 			}
 		}
