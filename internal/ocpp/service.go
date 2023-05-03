@@ -3,6 +3,7 @@ package ocpp
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -18,12 +19,19 @@ import (
 	"github.com/stromenergy/strom/internal/ocpp/reservation"
 	"github.com/stromenergy/strom/internal/ocpp/transaction"
 	"github.com/stromenergy/strom/internal/ocpp/triggermessage"
+	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
 type OcppInterface interface {
 	Start(shutdownCtx context.Context, waitGroup *sync.WaitGroup)
 	MountRoutes(engine *gin.Engine)
+
+	CancelReservation(client *ws.Client, reservationID int64)
+	ChangeAvailability(client *ws.Client, connectorId int32, availabilityType types.AvailabilityType) (string, <-chan types.Message)
+	DataTransfer(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message)
+	ReserveNow(client *ws.Client, connectorId int32, expiryDate time.Time, idTag string, parentIdTag *string)
+	TriggerMessage(client *ws.Client, chargePointId int64, messageTrigger types.MessageTrigger, connectorId *int32) (string, <-chan types.Message)
 }
 
 type Ocpp struct {
@@ -70,7 +78,7 @@ func NewService(repository *db.Repository) OcppInterface {
 		firmware:       firmware.NewService(repository),
 		heartbeat:      heartbeat.NewService(repository),
 		meterValue:     meterValue,
-		notification:   notification.NewService(repository, triggerMessageService),
+		notification:   notification.NewService(repository, callService, triggerMessageService),
 		reservation:    reservation.NewService(repository, callService),
 		transaction:    transaction.NewService(repository, authorization, meterValue),
 		triggerMessage: triggerMessageService,

@@ -68,8 +68,8 @@ func (s *Notification) BootNotificationReq(client *ws.Client, message types.Mess
 	callResult.Send(client)
 
 	// TODO: Queue the requests
-	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerStatusNotification, nil)
-	s.triggerMessage.Request(client, chargePoint.ID, types.MessageTriggerMeterValues, nil)
+	s.triggerMessage.SendTriggerMessageReq(client, chargePoint.ID, types.MessageTriggerStatusNotification, nil)
+	s.triggerMessage.SendTriggerMessageReq(client, chargePoint.ID, types.MessageTriggerMeterValues, nil)
 
 	// TODO: Notify UI of changes
 }

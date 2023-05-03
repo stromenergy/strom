@@ -5,7 +5,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *DataTransfer) Request(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message) {
+func (s *DataTransfer) SendDataTransferReq(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message) {
 	dataTransferReq := DataTransferReq{
 		VendorID:  vendorId,
 		MessageID: messageID,

@@ -1,5 +1,20 @@
 package types
 
+type AvailabilityStatus string
+
+const (
+	AvailabilityStatusAccepted  AvailabilityStatus = "Accepted"
+	AvailabilityStatusRejected  AvailabilityStatus = "Rejected"
+	AvailabilityStatusScheduled AvailabilityStatus = "Scheduled"
+)
+
+type AvailabilityType string
+
+const (
+	AvailabilityTypeInoperative AvailabilityType = "Inoperative"
+	AvailabilityTypeOperative   AvailabilityType = "Operative"
+)
+
 type CallAction string
 
 const (

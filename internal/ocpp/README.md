@@ -3,7 +3,7 @@
 - [x] Authorize
 - [x] BootNotification
 - [x] CancelReservation
-- [ ] ChangeAvailability
+- [x] ChangeAvailability
 - [ ] ChangeConfiguration
 - [ ] ClearCache
 - [ ] ClearChargingProfile
