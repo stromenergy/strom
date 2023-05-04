@@ -1,30 +1,47 @@
 ### Implementation Progress
 
+## Core
+
 - [x] Authorize
 - [x] BootNotification
-- [x] CancelReservation
 - [x] ChangeAvailability
 - [ ] ChangeConfiguration
 - [ ] ClearCache
-- [ ] ClearChargingProfile
 - [x] DataTransfer
-- [x] DiagnosticsStatusNotification
-- [x] FirmwareStatusNotification
-- [ ] GetCompositeSchedule
 - [ ] GetConfiguration
-- [ ] GetDiagnostics
-- [ ] GetLocalListVersion
 - [x] Heartbeat
 - [x] MeterValues
-- [ ] RemoteStartTransaction
-- [ ] RemoteStopTransaction
-- [x] ReserveNow
+- [x] RemoteStartTransaction
+- [x] RemoteStopTransaction
 - [ ] Reset
-- [ ] SendLocalList
-- [ ] SetChargingProfile
 - [x] StartTransaction
 - [x] StatusNotification
 - [x] StopTransaction
-- [x] TriggerMessage
 - [ ] UnlockConnector
+
+## Firmware Management
+
+- [x] DiagnosticsStatusNotification
+- [x] FirmwareStatusNotification
+- [ ] GetDiagnostics
 - [ ] UpdateFirmware
+
+## Local Auth List Management
+
+- [ ] GetLocalListVersion
+- [ ] SendLocalList
+
+## Reservation
+
+- [x] CancelReservation
+- [x] ReserveNow
+
+## Smart Charging
+
+- [ ] ClearChargingProfile
+- [ ] GetCompositeSchedule
+- [ ] SetChargingProfile
+
+## Remote Trigger
+
+- [x] TriggerMessage

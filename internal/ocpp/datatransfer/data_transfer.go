@@ -42,3 +42,13 @@ func (s *DataTransfer) DataTransferReq(client *ws.Client, message types.Message)
 	callResult := types.NewMessageCallResult(message.UniqueID, dataTransferConf)
 	callResult.Send(client)
 }
+
+func (s *DataTransfer) SendDataTransferReq(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message) {
+	dataTransferReq := DataTransferReq{
+		VendorID:  vendorId,
+		MessageID: messageID,
+		Data:      data,
+	}
+
+	return s.call.Send(client, types.CallActionDataTransfer, dataTransferReq)
+}

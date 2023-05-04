@@ -3,6 +3,7 @@ package ocpp
 import (
 	"time"
 
+	"github.com/stromenergy/strom/internal/ocpp/transaction"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/ws"
 )
@@ -17,6 +18,14 @@ func (s *Ocpp) CancelReservation(client *ws.Client, reservationID int64) {
 
 func (s *Ocpp) DataTransfer(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message) {
 	return s.dataTransfer.SendDataTransferReq(client, vendorId, messageID, data)
+}
+
+func (s *Ocpp) RemoteStartTransaction(client *ws.Client, connectorId *int32, idTag string, chargingProfile *transaction.ChargingProfile) (string, <-chan types.Message) {
+	return s.transaction.SendRemoteStartTransactionReq(client, connectorId, idTag, chargingProfile)
+}
+
+func (s *Ocpp) RemoteStopTransaction(client *ws.Client, transactionID int64) (string, <-chan types.Message) {
+	return s.transaction.SendRemoteStopTransactionReq(client, transactionID)
 }
 
 func (s *Ocpp) ReserveNow(client *ws.Client, connectorId int32, expiryDate time.Time, idTag string, parentIdTag *string) {

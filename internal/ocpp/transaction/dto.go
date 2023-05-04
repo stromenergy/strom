@@ -10,6 +10,56 @@ import (
 	"github.com/stromenergy/strom/internal/ocpp/types"
 )
 
+type ChargingProfile struct{}
+
+type RemoteStartTransactionReq struct {
+	ConnectorID     *int32           `json:"connectorId,omitempty"`
+	IDTag           string           `json:"idTag"`
+	ChargingProfile *ChargingProfile `json:"chargingProfile,omitempty"`
+}
+
+type RemoteStartTransactionConf struct {
+	Status types.RemoteStartStopStatus `json:"status"`
+}
+
+func unmarshalRemoteStartTranformationConf(payload interface{}) (*RemoteStartTransactionReq, error) {
+	remoteStartTransactionReq := &RemoteStartTransactionReq{}
+
+	switch typedPayload := payload.(type) {
+	case []byte:
+		if err := json.Unmarshal(typedPayload, remoteStartTransactionReq); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid type")
+	}
+
+	return remoteStartTransactionReq, nil
+}
+
+type RemoteStopTransactionReq struct {
+	TransactionID int64 `json:"transactionId"`
+}
+
+type RemoteStopTransactionConf struct {
+	Status types.RemoteStartStopStatus `json:"status"`
+}
+
+func unmarshalRemoteStopTranformationConf(payload interface{}) (*RemoteStopTransactionReq, error) {
+	remoteStopTransactionReq := &RemoteStopTransactionReq{}
+
+	switch typedPayload := payload.(type) {
+	case []byte:
+		if err := json.Unmarshal(typedPayload, remoteStopTransactionReq); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid type")
+	}
+
+	return remoteStopTransactionReq, nil
+}
+
 type StartTransactionReq struct {
 	ConnectorID   int32          `json:"connectorId"`
 	IDTag         string         `json:"idTag"`

@@ -127,6 +127,13 @@ const (
 	RegistrationStatusRejected RegistrationStatus = "Rejected"
 )
 
+type RemoteStartStopStatus string
+
+const (
+	RemoteStartStopStatusAccepted RemoteStartStopStatus = "Accepted"
+	RemoteStartStopStatusejected  RemoteStartStopStatus = "Rejected"
+)
+
 type TriggerMessageStatus string
 
 const (
