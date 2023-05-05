@@ -14,6 +14,7 @@ import (
 	"github.com/stromenergy/strom/internal/ocpp/diagnostic"
 	"github.com/stromenergy/strom/internal/ocpp/firmware"
 	"github.com/stromenergy/strom/internal/ocpp/heartbeat"
+	"github.com/stromenergy/strom/internal/ocpp/management"
 	"github.com/stromenergy/strom/internal/ocpp/metervalue"
 	"github.com/stromenergy/strom/internal/ocpp/notification"
 	"github.com/stromenergy/strom/internal/ocpp/reservation"
@@ -29,11 +30,14 @@ type OcppInterface interface {
 
 	CancelReservation(client *ws.Client, reservationID int64)
 	ChangeAvailability(client *ws.Client, connectorId int32, availabilityType types.AvailabilityType) (string, <-chan types.Message)
+	ClearCache(client *ws.Client) (string, <-chan types.Message)
 	DataTransfer(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message)
 	RemoteStartTransaction(client *ws.Client, connectorId *int32, idTag string, chargingProfile *transaction.ChargingProfile) (string, <-chan types.Message)
 	RemoteStopTransaction(client *ws.Client, transactionID int64) (string, <-chan types.Message)
 	ReserveNow(client *ws.Client, connectorId int32, expiryDate time.Time, idTag string, parentIdTag *string)
+	Reset(client *ws.Client, resetType types.ResetType) (string, <-chan types.Message)
 	TriggerMessage(client *ws.Client, chargePointId int64, messageTrigger types.MessageTrigger, connectorId *int32) (string, <-chan types.Message)
+	UnlockConnector(client *ws.Client, connectorId int32) (string, <-chan types.Message)
 }
 
 type Ocpp struct {
@@ -52,6 +56,7 @@ type Ocpp struct {
 	diagnostic     *diagnostic.Diagnostic
 	firmware       *firmware.Firmware
 	heartbeat      *heartbeat.Heartbeat
+	management     *management.Management
 	meterValue     *metervalue.MeterValue
 	notification   *notification.Notification
 	reservation    *reservation.Reservation
@@ -80,6 +85,7 @@ func NewService(repository *db.Repository) OcppInterface {
 		firmware:       firmware.NewService(repository),
 		heartbeat:      heartbeat.NewService(repository),
 		meterValue:     meterValue,
+		management:     management.NewService(repository, callService),
 		notification:   notification.NewService(repository, callService, triggerMessageService),
 		reservation:    reservation.NewService(repository, callService),
 		transaction:    transaction.NewService(repository, authorization, callService, meterValue),

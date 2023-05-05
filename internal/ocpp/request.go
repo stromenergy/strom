@@ -9,7 +9,11 @@ import (
 )
 
 func (s *Ocpp) ChangeAvailability(client *ws.Client, connectorId int32, availabilityType types.AvailabilityType) (string, <-chan types.Message) {
-	return s.notification.SendChangeAvailabilityReq(client, connectorId, availabilityType)
+	return s.management.SendChangeAvailabilityReq(client, connectorId, availabilityType)
+}
+
+func (s *Ocpp) ClearCache(client *ws.Client) (string, <-chan types.Message) {
+	return s.management.SendClearCacheReq(client)
 }
 
 func (s *Ocpp) CancelReservation(client *ws.Client, reservationID int64) {
@@ -32,6 +36,14 @@ func (s *Ocpp) ReserveNow(client *ws.Client, connectorId int32, expiryDate time.
 	s.reservation.SendReserveNowReq(client, connectorId, expiryDate, idTag, parentIdTag)
 }
 
+func (s *Ocpp) Reset(client *ws.Client, resetType types.ResetType) (string, <-chan types.Message) {
+	return s.management.SendResetReq(client, resetType)
+}
+
 func (s *Ocpp) TriggerMessage(client *ws.Client, chargePointId int64, messageTrigger types.MessageTrigger, connectorId *int32) (string, <-chan types.Message) {
 	return s.triggerMessage.SendTriggerMessageReq(client, chargePointId, messageTrigger, connectorId)
+}
+
+func (s *Ocpp) UnlockConnector(client *ws.Client, connectorId int32) (string, <-chan types.Message) {
+	return s.management.SendUnlockConnectorReq(client, connectorId)
 }

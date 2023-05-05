@@ -55,6 +55,13 @@ const (
 	CancelReservationStatusRejected CancelReservationStatus = "Rejected"
 )
 
+type ClearCacheStatus string
+
+const (
+	ClearCacheStatusAccepted ClearCacheStatus = "Accepted"
+	ClearCacheStatusRejected ClearCacheStatus = "Rejected"
+)
+
 type DataTransferStatus string
 
 const (
@@ -131,7 +138,21 @@ type RemoteStartStopStatus string
 
 const (
 	RemoteStartStopStatusAccepted RemoteStartStopStatus = "Accepted"
-	RemoteStartStopStatusejected  RemoteStartStopStatus = "Rejected"
+	RemoteStartStopStatusRejected RemoteStartStopStatus = "Rejected"
+)
+
+type ResetStatus string
+
+const (
+	ResetStatusAccepted ResetStatus = "Accepted"
+	ResetStatusRejected ResetStatus = "Rejected"
+)
+
+type ResetType string
+
+const (
+	ResetTypeHard ResetType = "Hard"
+	ResetTypeSoft ResetType = "Soft"
 )
 
 type TriggerMessageStatus string
@@ -140,4 +161,12 @@ const (
 	TriggerMessageStatusAccepted       TriggerMessageStatus = "Accepted"
 	TriggerMessageStatusRejected       TriggerMessageStatus = "Rejected"
 	TriggerMessageStatusNotImplemented TriggerMessageStatus = "NotImplemented"
+)
+
+type UnlockStatus string
+
+const (
+	UnlockStatusUnlocked     UnlockStatus = "Unlocked"
+	UnlockStatusUnlockFailed UnlockStatus = "UnlockFailed"
+	UnlockStatusNotSupported UnlockStatus = "NotSupported"
 )

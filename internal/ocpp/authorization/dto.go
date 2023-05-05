@@ -18,7 +18,7 @@ type AuthorizeReq struct {
 	IDTag string `json:"idTag"`
 }
 
-type AuthorizationConf struct {
+type AuthorizeConf struct {
 	IDTagInfo IDTagInfo `json:"idTagInfo"`
 }
 

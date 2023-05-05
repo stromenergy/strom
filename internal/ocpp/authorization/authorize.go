@@ -22,10 +22,10 @@ func (s *Authorization) AuthorizeReq(client *ws.Client, message types.Message) {
 	ctx := context.Background()
 	idTagInfo := s.GetIDTagInfo(ctx, authorizeReq.IDTag, db.AuthorizationStatusInvalid)
 
-	authorizationConf := AuthorizationConf{
+	authorizeConf := AuthorizeConf{
 		IDTagInfo: idTagInfo,
 	}
 
-	callResult := types.NewMessageCallResult(message.UniqueID, authorizationConf)
+	callResult := types.NewMessageCallResult(message.UniqueID, authorizeConf)
 	callResult.Send(client)
 }

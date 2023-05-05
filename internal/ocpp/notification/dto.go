@@ -41,30 +41,6 @@ func unmarshalBootNotificationReq(payload interface{}) (*BootNotificationReq, er
 	return bootNotificationReq, nil
 }
 
-type ChangeAvailabilityReq struct {
-	ConnectorID int32                  `json:"connectorId"`
-	Type        types.AvailabilityType `json:"type"`
-}
-
-type ChangeAvailabilityConf struct {
-	Status types.AvailabilityStatus `json:"status"`
-}
-
-func unmarshalChangeAvailabilityConf(payload interface{}) (*ChangeAvailabilityConf, error) {
-	chargeAvailabilityConf := &ChangeAvailabilityConf{}
-
-	switch typedPayload := payload.(type) {
-	case []byte:
-		if err := json.Unmarshal(typedPayload, chargeAvailabilityConf); err != nil {
-			return nil, err
-		}
-	default:
-		return nil, errors.New("Invalid type")
-	}
-
-	return chargeAvailabilityConf, nil
-}
-
 type StatusNotificationReq struct {
 	ConnectorID     int32                   `json:"connectorId"`
 	ErrorCode       db.ChargePointErrorCode `json:"errorCode"`
