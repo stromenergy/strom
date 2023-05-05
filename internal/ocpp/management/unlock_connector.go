@@ -5,7 +5,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *Management) SendUnlockConnectorReq(client *ws.Client, connectorId int32) (string, <-chan types.Message) {
+func (s *Management) SendUnlockConnectorReq(client *ws.Client, connectorId int32) (string, <-chan types.Message, error) {
 	cancelReservationReq := UnlockConnectorReq{
 		ConnectorID: connectorId,
 	}

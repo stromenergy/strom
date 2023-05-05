@@ -5,7 +5,7 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *Transaction) SendRemoteStartTransactionReq(client *ws.Client, connectorId *int32, idTag string, chargingProfile *ChargingProfile) (string, <-chan types.Message) {
+func (s *Transaction) SendRemoteStartTransactionReq(client *ws.Client, connectorId *int32, idTag string, chargingProfile *ChargingProfile) (string, <-chan types.Message, error) {
 	remoteStartTransactionReq := RemoteStartTransactionReq{
 		ConnectorID: connectorId,
 		IDTag: idTag,

@@ -2,21 +2,23 @@ package management
 
 import (
 	"context"
+	"errors"
 
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/db/param"
+	"github.com/stromenergy/strom/internal/ocpp/call"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/util"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *Management) SendChangeConfigurationReq(client *ws.Client, key, value string) {
+func (s *Management) SendChangeConfigurationReq(client *ws.Client, key, value string) (string, <-chan types.Message, error) {
 	ctx := context.Background()
 	chargePoint, err := s.repository.GetChargePointByIdentity(ctx, client.ID)
 
 	if err != nil {
 		util.LogError("STR067: Charge point not found", err)
-		return
+		return "", nil, errors.New("Charge point not found")
 	}
 
 	getConfigurationByKeyParams := db.GetConfigurationByKeyParams{
@@ -28,7 +30,7 @@ func (s *Management) SendChangeConfigurationReq(client *ws.Client, key, value st
 
 	if err != nil {
 		util.LogError("STR068: Configuration not found", err)
-		return
+		return "", nil, errors.New("Configuration not found")
 	}
 
 	changeConfigurationReq := ChangeConfigurationReq{
@@ -36,14 +38,26 @@ func (s *Management) SendChangeConfigurationReq(client *ws.Client, key, value st
 		Value: value,
 	}
 
-	uniqueID, channel := s.call.Send(client, types.CallActionChangeConfiguration, changeConfigurationReq)
+	uniqueID, confChannel, err := s.call.Send(client, types.CallActionChangeConfiguration, changeConfigurationReq)
+
+	if err != nil {
+		s.call.Remove(uniqueID)
+		return "", nil, err
+	}
 
 	// Wait for the channel to produce a response
-	go s.waitForChangeConfigurationConf(client, configuration, uniqueID, channel)
+	reqChan := make(chan types.Message)
+
+	go s.waitForChangeConfigurationConf(client, configuration, uniqueID, confChannel, reqChan)
+
+	return uniqueID, reqChan, nil
 }
 
-func (s *Management) waitForChangeConfigurationConf(client *ws.Client, configuration db.Configuration, uniqueID string, channel <-chan types.Message) {
-	message := <-channel
+func (s *Management) waitForChangeConfigurationConf(client *ws.Client, configuration db.Configuration, uniqueID string, confChannel <-chan types.Message, reqChannel chan<- types.Message) {
+	message := <-confChannel
+
+	// Forward message to requestor
+	defer call.Forward(message, reqChannel)
 
 	// Update the configuration
 	ctx := context.Background()

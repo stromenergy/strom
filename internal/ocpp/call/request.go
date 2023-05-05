@@ -6,14 +6,14 @@ import (
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *Call) Send(client *ws.Client, action types.CallAction, payload interface{}) (string, <-chan types.Message) {
+func (s *Call) Send(client *ws.Client, action types.CallAction, payload interface{}) (string, <-chan types.Message, error) {
 	uniqueID := s.getUniqueID()
 	s.channels[uniqueID] = make(chan types.Message)
 
 	message := types.NewMessageCall(uniqueID, action, payload)
-	message.Send(client)
+	err := message.Send(client)
 
-	return uniqueID, s.channels[uniqueID]
+	return uniqueID, s.channels[uniqueID], err
 }
 
 func (s *Call) getUniqueID() string {

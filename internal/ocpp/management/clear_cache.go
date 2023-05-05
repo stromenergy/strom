@@ -6,6 +6,6 @@ import (
 )
 
 
-func (s *Management) SendClearCacheReq(client *ws.Client) (string, <-chan types.Message) {
+func (s *Management) SendClearCacheReq(client *ws.Client) (string, <-chan types.Message, error) {
 	return s.call.Send(client, types.CallActionClearCache, ClearCacheReq{})
 }

@@ -43,7 +43,7 @@ func (s *DataTransfer) DataTransferReq(client *ws.Client, message types.Message)
 	callResult.Send(client)
 }
 
-func (s *DataTransfer) SendDataTransferReq(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message) {
+func (s *DataTransfer) SendDataTransferReq(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message, error) {
 	dataTransferReq := DataTransferReq{
 		VendorID:  vendorId,
 		MessageID: messageID,

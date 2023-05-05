@@ -2,22 +2,24 @@ package reservation
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/db/param"
+	"github.com/stromenergy/strom/internal/ocpp/call"
 	"github.com/stromenergy/strom/internal/ocpp/types"
 	"github.com/stromenergy/strom/internal/util"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
-func (s *Reservation) SendReserveNowReq(client *ws.Client, connectorId int32, expiryDate time.Time, idTag string, parentIdTag *string) {
+func (s *Reservation) SendReserveNowReq(client *ws.Client, connectorId int32, expiryDate time.Time, idTag string, parentIdTag *string) (string, <-chan types.Message, error) {
 	ctx := context.Background()
 	chargePoint, err := s.repository.GetChargePointByIdentity(ctx, client.ID)
 
 	if err != nil {
 		util.LogError("STR040: Charge point not found", err)
-		return
+		return "", nil, errors.New("Charge point now found")
 	}
 
 	createReservationParams := db.CreateReservationParams{
@@ -33,7 +35,7 @@ func (s *Reservation) SendReserveNowReq(client *ws.Client, connectorId int32, ex
 
 	if err != nil {
 		util.LogError("STR041: Error creating reservation", err)
-		return
+		return "", nil, errors.New("Error creating reservation")
 	}
 
 	reserveNowReq := ReserveNowReq{
@@ -44,14 +46,26 @@ func (s *Reservation) SendReserveNowReq(client *ws.Client, connectorId int32, ex
 		ReservationID: reservation.ID,
 	}
 
-	uniqueID, channel := s.call.Send(client, types.CallActionReserveNow, reserveNowReq)
+	uniqueID, confChannel, err := s.call.Send(client, types.CallActionReserveNow, reserveNowReq)
+
+	if err != nil {
+		s.call.Remove(uniqueID)
+		return "", nil, err
+	}
 
 	// Wait for the channel to produce a response
-	go s.waitForReserveNowConf(client, reservation, uniqueID, channel)
+	reqChan := make(chan types.Message)
+	
+	go s.waitForReserveNowConf(client, reservation, uniqueID, confChannel, reqChan)
+
+	return uniqueID, reqChan, nil
 }
 
-func (s *Reservation) waitForReserveNowConf(client *ws.Client, reservation db.Reservation, uniqueID string, channel <-chan types.Message) {
+func (s *Reservation) waitForReserveNowConf(client *ws.Client, reservation db.Reservation, uniqueID string, channel <-chan types.Message, reqChannel chan<- types.Message) {
 	message := <-channel
+
+	// Forward message to requestor
+	defer call.Forward(message, reqChannel)
 
 	// Update the reservation
 	ctx := context.Background()

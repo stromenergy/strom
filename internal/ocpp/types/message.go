@@ -108,13 +108,15 @@ func (m *Message) UnmarshalJSON(p []byte) error {
 	return nil
 }
 
-func (m *Message) Send(client *ws.Client) {
+func (m *Message) Send(client *ws.Client) error {
 	bytes, err := json.Marshal(m)
 
 	if err != nil {
 		util.LogError("STR029: Error marshaling message", err)
-		return
+		return errors.New("Error sending message")
 	}
 
 	client.Send(bytes)
+
+	return nil
 }
