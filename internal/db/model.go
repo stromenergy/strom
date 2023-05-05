@@ -620,6 +620,16 @@ type ChargePoint struct {
 	UpdatedAt         time.Time      `db:"updated_at" json:"updatedAt"`
 }
 
+type Configuration struct {
+	ID            int64          `db:"id" json:"id"`
+	ChargePointID int64          `db:"charge_point_id" json:"chargePointID"`
+	Key           string         `db:"key" json:"key"`
+	Readonly      bool           `db:"readonly" json:"readonly"`
+	Value         sql.NullString `db:"value" json:"value"`
+	CreatedAt     time.Time      `db:"created_at" json:"createdAt"`
+	UpdatedAt     time.Time      `db:"updated_at" json:"updatedAt"`
+}
+
 type Connector struct {
 	ID              int64                `db:"id" json:"id"`
 	ConnectorID     int32                `db:"connector_id" json:"connectorID"`

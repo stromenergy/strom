@@ -30,8 +30,10 @@ type OcppInterface interface {
 
 	CancelReservation(client *ws.Client, reservationID int64)
 	ChangeAvailability(client *ws.Client, connectorId int32, availabilityType types.AvailabilityType) (string, <-chan types.Message)
+	ChangeConfiguration(client *ws.Client, key, value string)
 	ClearCache(client *ws.Client) (string, <-chan types.Message)
 	DataTransfer(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message)
+	GetConfiguration(client *ws.Client, keys *[]string)
 	RemoteStartTransaction(client *ws.Client, connectorId *int32, idTag string, chargingProfile *transaction.ChargingProfile) (string, <-chan types.Message)
 	RemoteStopTransaction(client *ws.Client, transactionID int64) (string, <-chan types.Message)
 	ReserveNow(client *ws.Client, connectorId int32, expiryDate time.Time, idTag string, parentIdTag *string)

@@ -55,6 +55,15 @@ const (
 	CancelReservationStatusRejected CancelReservationStatus = "Rejected"
 )
 
+type ConfigurationStatus string
+
+const (
+	ConfigurationStatusAccepted       ConfigurationStatus = "Accepted"
+	ConfigurationStatusRejected       ConfigurationStatus = "Rejected"
+	ConfigurationStatusRebootRequired ConfigurationStatus = "RebootRequired"
+	ConfigurationStatusNotSupported   ConfigurationStatus = "NotSupported"
+)
+
 type ClearCacheStatus string
 
 const (

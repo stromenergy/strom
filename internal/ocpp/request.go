@@ -12,6 +12,10 @@ func (s *Ocpp) ChangeAvailability(client *ws.Client, connectorId int32, availabi
 	return s.management.SendChangeAvailabilityReq(client, connectorId, availabilityType)
 }
 
+func (s *Ocpp) ChangeConfiguration(client *ws.Client, key, value string) {
+	s.management.SendChangeConfigurationReq(client, key, value)
+}
+
 func (s *Ocpp) ClearCache(client *ws.Client) (string, <-chan types.Message) {
 	return s.management.SendClearCacheReq(client)
 }
@@ -22,6 +26,10 @@ func (s *Ocpp) CancelReservation(client *ws.Client, reservationID int64) {
 
 func (s *Ocpp) DataTransfer(client *ws.Client, vendorId string, messageID, data *string) (string, <-chan types.Message) {
 	return s.dataTransfer.SendDataTransferReq(client, vendorId, messageID, data)
+}
+
+func (s *Ocpp) GetConfiguration(client *ws.Client, keys *[]string) {
+	s.management.SendGetConfigurationReq(client, keys)
 }
 
 func (s *Ocpp) RemoteStartTransaction(client *ws.Client, connectorId *int32, idTag string, chargingProfile *transaction.ChargingProfile) (string, <-chan types.Message) {

@@ -5,19 +5,19 @@
 - [x] Authorize
 - [x] BootNotification
 - [x] ChangeAvailability
-- [ ] ChangeConfiguration
-- [ ] ClearCache
+- [x] ChangeConfiguration
+- [x] ClearCache
 - [x] DataTransfer
-- [ ] GetConfiguration
+- [x] GetConfiguration
 - [x] Heartbeat
 - [x] MeterValues
 - [x] RemoteStartTransaction
 - [x] RemoteStopTransaction
-- [ ] Reset
+- [x] Reset
 - [x] StartTransaction
 - [x] StatusNotification
 - [x] StopTransaction
-- [ ] UnlockConnector
+- [x] UnlockConnector
 
 ## Firmware Management
 

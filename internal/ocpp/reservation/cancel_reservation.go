@@ -32,9 +32,6 @@ func (s *Reservation) SendCancelReservationReq(client *ws.Client, reservationID 
 
 func (s *Reservation) waitForCancelReservationConf(client *ws.Client, reservation db.Reservation, uniqueID string, channel <-chan types.Message) {
 	message := <-channel
-	
-	// Remove the channel as a response listener
-	s.call.Remove(uniqueID)
 
 	// Update the reservation
 	ctx := context.Background()

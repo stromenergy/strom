@@ -31,6 +31,30 @@ func unmarshalChangeAvailabilityConf(payload interface{}) (*ChangeAvailabilityCo
 	return chargeAvailabilityConf, nil
 }
 
+type ChangeConfigurationReq struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type ChangeConfigurationConf struct {
+	Status types.ConfigurationStatus `json:"status"`
+}
+
+func unmarshalChangeConfigurationConf(payload interface{}) (*ChangeConfigurationConf, error) {
+	changeConfigurationConf := &ChangeConfigurationConf{}
+
+	switch typedPayload := payload.(type) {
+	case []byte:
+		if err := json.Unmarshal(typedPayload, changeConfigurationConf); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid type")
+	}
+
+	return changeConfigurationConf, nil
+}
+
 type ClearCacheReq struct{}
 
 type ClearCacheConf struct {
@@ -50,6 +74,36 @@ func unmarshalClearCacheReq(payload interface{}) (*ClearCacheReq, error) {
 	}
 
 	return clearCacheReq, nil
+}
+
+type KeyValue struct {
+	Key      string  `json:"key"`
+	Readonly bool    `json:"readonly"`
+	Value    *string `json:"value"`
+}
+
+type GetConfigurationReq struct {
+	Key *[]string `json:"key,omitempty"`
+}
+
+type GetConfigurationConf struct {
+	ConfigurationKey *[]KeyValue `json:"configurationKey,omitempty"`
+	UnknownKey       *[]string   `json:"unknownKey,omitempty"`
+}
+
+func unmarshalGetConfigurationConf(payload interface{}) (*GetConfigurationConf, error) {
+	getConfigurationConf := &GetConfigurationConf{}
+
+	switch typedPayload := payload.(type) {
+	case []byte:
+		if err := json.Unmarshal(typedPayload, getConfigurationConf); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("Invalid type")
+	}
+
+	return getConfigurationConf, nil
 }
 
 type ResetReq struct {

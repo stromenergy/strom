@@ -53,9 +53,6 @@ func (s *Reservation) SendReserveNowReq(client *ws.Client, connectorId int32, ex
 func (s *Reservation) waitForReserveNowConf(client *ws.Client, reservation db.Reservation, uniqueID string, channel <-chan types.Message) {
 	message := <-channel
 
-	// Remove the channel as a response listener
-	s.call.Remove(uniqueID)
-
 	// Update the reservation
 	ctx := context.Background()
 	updateReservationParams := param.NewUpdateReservationParams(reservation)
