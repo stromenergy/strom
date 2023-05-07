@@ -13,8 +13,10 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/build"
 	"github.com/stromenergy/strom/internal/db"
+	"github.com/stromenergy/strom/internal/lightning/lnd"
 	"github.com/stromenergy/strom/internal/rest"
 	"github.com/stromenergy/strom/internal/service"
+	"github.com/stromenergy/strom/internal/util"
 	"github.com/urfave/cli/v2"
 	"github.com/urfave/cli/v2/altsrc"
 )
@@ -41,25 +43,10 @@ func main() {
 		// Application
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Category: "Application",
-			EnvVars: []string{"APP_PORT"},
-			Name:  "strom.port",
-			Value: "6102",
-			Usage: "Port of the API",
-		}),
-		// Logging
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Logging",
-			EnvVars: []string{"LOG_LEVEL"},
-			Name:    "log.level",
-			Value:   "info",
-			Usage:   "Log level (panic, fatal, error, warn, info, debug, trace)",
-		}),
-		altsrc.NewBoolFlag(&cli.BoolFlag{
-			Category: "Logging",
-			EnvVars: []string{"LOG_TEXT"},
-			Name:    "log.text",
-			Value:   false,
-			Usage:   "Log output human-friendly text",
+			EnvVars:  []string{"APP_PORT"},
+			Name:     "strom.port",
+			Value:    "6102",
+			Usage:    "Port of the API",
 		}),
 		// Database
 		altsrc.NewStringFlag(&cli.StringFlag{
@@ -100,9 +87,55 @@ func main() {
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Category: "Database",
 			EnvVars:  []string{"DB_SSL_MODE"},
-			Name:     "db.sslmode",
+			Name:     "db.ssl-mode",
 			Usage:    "SSL mode of the database",
 			Value:    "disable",
+		}),
+		// Lightning
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "Lightning",
+			EnvVars:  []string{"LND_GRPC_HOST"},
+			Name:     "lnd.grpc-host",
+			Usage:    "LND GRPC host:port",
+		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "Lightning",
+			EnvVars:  []string{"LND_MACAROON"},
+			Name:     "lnd.macaroon",
+			Usage:    "LND macaroon (base64 encoded)",
+		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "Lightning",
+			EnvVars:  []string{"LND_MACAROON_FILE"},
+			Name:     "lnd.macaroon-file",
+			Usage:    "LND macaroon file path",
+		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "Lightning",
+			EnvVars:  []string{"LND_TLS_CERT"},
+			Name:     "lnd.tls-cert",
+			Usage:    "LND TLS certificate (base64 encoded)",
+		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "Lightning",
+			EnvVars:  []string{"LND_TLS_CERT_FILE"},
+			Name:     "lnd.tls-cert-file",
+			Usage:    "LND TLS certificate file path",
+		}),
+		// Logging
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "Logging",
+			EnvVars:  []string{"LOG_LEVEL"},
+			Name:     "log.level",
+			Value:    "info",
+			Usage:    "Log level (panic, fatal, error, warn, info, debug, trace)",
+		}),
+		altsrc.NewBoolFlag(&cli.BoolFlag{
+			Category: "Logging",
+			EnvVars:  []string{"LOG_TEXT"},
+			Name:     "log.text",
+			Value:    false,
+			Usage:    "Log output human-friendly text",
 		}),
 	}
 
@@ -125,26 +158,30 @@ func main() {
 			log.Debug().Msgf("Powering up Strom: %s", build.Version())
 
 			// Initialize and migrate database
-			dbInstance, err := db.Open(ctx.String("db.username"), ctx.String("db.password"), ctx.String("db.host"), ctx.String("db.port"), ctx.String("db.name"), ctx.String("db.sslmode"))
-
-			if err != nil {
-				return err
-			}
+			dbInstance, err := db.Open(ctx.String("db.username"), ctx.String("db.password"), ctx.String("db.host"), ctx.String("db.port"), ctx.String("db.name"), ctx.String("db.ssl-mode"))
+			util.OnErrorPanic(err)
 
 			repository := db.NewRepository(dbInstance)
 			defer dbInstance.Close()
 
 			err = db.Migrate(dbInstance)
+			util.OnErrorPanic(err)
 
-			if err != nil {
-				return err
-			}
+			// Initialize lightning
+			lndMacaroon, err := util.ResolveFromFile(ctx.String("lnd.macaroon"), ctx.String("lnd.macaroon-file"))
+			util.OnErrorPanic(err)
+
+			lndTlsCert, err := util.ResolveFromFile(ctx.String("lnd.tls-cert"), ctx.String("lnd.tls-cert-file"))
+			util.OnErrorPanic(err)
+
+			lightning, err := lnd.Connect(lndTlsCert, lndMacaroon, ctx.String("lnd.grpc-host"))
+			util.OnErrorPanic(err)
 
 			// Initialize services
 			shutdownCtx, cancelFunc := context.WithCancel(context.Background())
 			waitGroup := &sync.WaitGroup{}
 
-			services := service.NewService(repository)
+			services := service.NewService(repository, lightning)
 			services.Start(shutdownCtx, waitGroup)
 
 			restService := rest.NewService(repository, services)

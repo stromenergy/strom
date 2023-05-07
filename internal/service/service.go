@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stromenergy/strom/internal/db"
+	"github.com/stromenergy/strom/internal/lightning"
 	"github.com/stromenergy/strom/internal/ocpp"
 )
 
@@ -15,14 +16,16 @@ type ServiceInterface interface {
 }
 
 type Service struct {
-	Ocpp ocpp.OcppInterface
+	Ocpp      ocpp.OcppInterface
+	Lightning lightning.LightningInterface
 }
 
-func NewService(repository *db.Repository) ServiceInterface {
+func NewService(repository *db.Repository, lightningService lightning.LightningInterface) ServiceInterface {
 	ocppService := ocpp.NewService(repository)
 
 	return &Service{
-		Ocpp: ocppService,
+		Ocpp:      ocppService,
+		Lightning: lightningService,
 	}
 }
 

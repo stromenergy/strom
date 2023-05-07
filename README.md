@@ -59,7 +59,7 @@ Strom could also be extended to support [OCPI](https://github.com/ocpi/ocpi) (Op
 ## Roadmap
 
 - [x] Project framework
-- [ ] OCPP 1.6 core
+- [x] OCPP 1.6 core
 - [ ] LND backend
 - [ ] Basic Admin UI
 - [ ] REST API

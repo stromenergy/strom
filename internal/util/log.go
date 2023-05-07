@@ -13,3 +13,9 @@ func LogError(msg string, err error) {
 func LogDebug(msg string) {
 	log.Debug().Msg(msg)
 }
+
+func OnErrorPanic(err error) {
+	if err != nil {
+		log.Fatal().Msgf("%#v", err)
+	}
+}
