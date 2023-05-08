@@ -60,15 +60,19 @@ Strom could also be extended to support [OCPI](https://github.com/ocpi/ocpi) (Op
 
 - [x] Project framework
 - [x] OCPP 1.6 core
-- [ ] LND backend
+- [x] Lightning interface
+- [x] LND lightning implementation
 - [ ] Basic Admin UI
 - [ ] REST API
 - [ ] Static tariff management
 - [ ] Public charge point UI
 - [ ] LNURL session management
+- [ ] Nostr interface
 - [ ] Nostr session management
 - [ ] Umbrel app integration
 - [ ] Second Lightning backend
 - [ ] Websocket UI
 - [ ] Dynamic tariff management
 - [ ] OCPI extension
+- [ ] OCPP 1.6 submodules
+- [ ] OCPP passthrough

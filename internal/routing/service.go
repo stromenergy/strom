@@ -1,4 +1,4 @@
-package rest
+package routing
 
 import (
 	"context"
@@ -14,11 +14,11 @@ import (
 	"github.com/stromenergy/strom/internal/util"
 )
 
-type RestInterface interface {
+type RoutingInterface interface {
 	Start(port string, shutdownCtx context.Context, waitGroup *sync.WaitGroup)
 }
 
-type Rest struct {
+type Routing struct {
 	repository  *db.Repository
 	server      *http.Server
 	services    service.ServiceInterface
@@ -26,14 +26,14 @@ type Rest struct {
 	waitGroup   *sync.WaitGroup
 }
 
-func NewService(repository *db.Repository, services service.ServiceInterface) RestInterface {
-	return &Rest{
+func NewService(repository *db.Repository, services service.ServiceInterface) RoutingInterface {
+	return &Routing{
 		repository: repository,
 		services:   services,
 	}
 }
 
-func (s *Rest) Start(port string, shutdownCtx context.Context, waitGroup *sync.WaitGroup) {
+func (s *Routing) Start(port string, shutdownCtx context.Context, waitGroup *sync.WaitGroup) {
 	s.shutdownCtx = shutdownCtx
 	s.waitGroup = waitGroup
 	waitGroup.Add(1)
@@ -42,10 +42,11 @@ func (s *Rest) Start(port string, shutdownCtx context.Context, waitGroup *sync.W
 	go s.waitForShutdown()
 }
 
-func (s *Rest) listenAndServe(port string) {
+func (s *Routing) listenAndServe(port string) {
 	engine := gin.Default()
 
 	s.mountRoutes(engine)
+	s.mountStaticRoutes(engine)
 
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),
@@ -59,7 +60,7 @@ func (s *Rest) listenAndServe(port string) {
 	}
 }
 
-func (s *Rest) waitForShutdown() {
+func (s *Routing) waitForShutdown() {
 	<-s.shutdownCtx.Done()
 	log.Debug().Msg("Shutting down Rest service")
 

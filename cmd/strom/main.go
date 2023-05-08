@@ -8,13 +8,12 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/cockroachdb/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stromenergy/strom/internal/build"
 	"github.com/stromenergy/strom/internal/db"
 	"github.com/stromenergy/strom/internal/lightning/lnd"
-	"github.com/stromenergy/strom/internal/rest"
+	"github.com/stromenergy/strom/internal/routing"
 	"github.com/stromenergy/strom/internal/service"
 	"github.com/stromenergy/strom/internal/util"
 	"github.com/urfave/cli/v2"
@@ -42,7 +41,7 @@ func main() {
 		},
 		// Application
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Application",
+			Category: "application",
 			EnvVars:  []string{"APP_PORT"},
 			Name:     "strom.port",
 			Value:    "6102",
@@ -50,42 +49,42 @@ func main() {
 		}),
 		// Database
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Database",
+			Category: "database",
 			EnvVars:  []string{"DB_NAME"},
 			Name:     "db.name",
 			Usage:    "Name of the database",
 			Value:    "strom",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Database",
+			Category: "database",
 			EnvVars:  []string{"DB_PORT"},
 			Name:     "db.port",
 			Usage:    "Port of the database",
 			Value:    "5432",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Database",
+			Category: "database",
 			EnvVars:  []string{"DB_HOST"},
 			Name:     "db.host",
 			Usage:    "Host of the database",
 			Value:    "localhost",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Database",
+			Category: "database",
 			EnvVars:  []string{"DB_USERNAME"},
 			Name:     "db.username",
 			Usage:    "Username of the database",
 			Value:    "strom",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Database",
+			Category: "database",
 			EnvVars:  []string{"DB_PASSWORD"},
 			Name:     "db.password",
 			Usage:    "Password of the database user",
 			Value:    "password",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Database",
+			Category: "database",
 			EnvVars:  []string{"DB_SSL_MODE"},
 			Name:     "db.ssl-mode",
 			Usage:    "SSL mode of the database",
@@ -93,45 +92,45 @@ func main() {
 		}),
 		// Lightning
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Lightning",
+			Category: "lightning",
 			EnvVars:  []string{"LND_GRPC_HOST"},
 			Name:     "lnd.grpc-host",
 			Usage:    "LND GRPC host:port",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Lightning",
+			Category: "lightning",
 			EnvVars:  []string{"LND_MACAROON"},
 			Name:     "lnd.macaroon",
 			Usage:    "LND macaroon (base64 encoded)",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Lightning",
+			Category: "lightning",
 			EnvVars:  []string{"LND_MACAROON_FILE"},
 			Name:     "lnd.macaroon-file",
 			Usage:    "LND macaroon file path",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Lightning",
+			Category: "lightning",
 			EnvVars:  []string{"LND_TLS_CERT"},
 			Name:     "lnd.tls-cert",
 			Usage:    "LND TLS certificate (base64 encoded)",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Lightning",
+			Category: "lightning",
 			EnvVars:  []string{"LND_TLS_CERT_FILE"},
 			Name:     "lnd.tls-cert-file",
 			Usage:    "LND TLS certificate file path",
 		}),
 		// Logging
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Category: "Logging",
+			Category: "logging",
 			EnvVars:  []string{"LOG_LEVEL"},
 			Name:     "log.level",
 			Value:    "info",
 			Usage:    "Log level (panic, fatal, error, warn, info, debug, trace)",
 		}),
 		altsrc.NewBoolFlag(&cli.BoolFlag{
-			Category: "Logging",
+			Category: "logging",
 			EnvVars:  []string{"LOG_TEXT"},
 			Name:     "log.text",
 			Value:    false,
@@ -184,8 +183,8 @@ func main() {
 			services := service.NewService(repository, lightning)
 			services.Start(shutdownCtx, waitGroup)
 
-			restService := rest.NewService(repository, services)
-			restService.Start(ctx.String("strom.port"), shutdownCtx, waitGroup)
+			routingService := routing.NewService(repository, services)
+			routingService.Start(ctx.String("strom.port"), shutdownCtx, waitGroup)
 
 			// Handle shutdown
 			sigtermChan := make(chan os.Signal, 1)
@@ -231,15 +230,9 @@ func getConfigAbsolutePath() string {
 func initInputSource() func(context *cli.Context) (altsrc.InputSourceContext, error) {
 	return func(context *cli.Context) (altsrc.InputSourceContext, error) {
 		if _, err := os.Stat(context.String("config")); err != nil {
-			return altsrc.NewMapInputSource("", map[interface{}]interface{}{}), nil
+			return &altsrc.MapInputSource{}, nil
 		}
 
-		tomlSource, err := altsrc.NewTomlSourceFromFile(context.String("config"))
-
-		if err != nil {
-			return nil, errors.Wrap(err, "Creating new config file")
-		}
-
-		return tomlSource, nil
+		return altsrc.NewTomlSourceFromFile(context.String("config"))
 	}
 }

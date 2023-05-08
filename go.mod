@@ -178,6 +178,7 @@ require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/cockroachdb/errors v1.9.1
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/google/uuid v1.3.0
