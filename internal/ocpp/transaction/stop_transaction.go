@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Transaction) StopTransactionReq(client *ws.Client, message types.Message) {
-	stopTransactionReq, err := unmarshalStopTransactionReq(message.Payload)
+	stopTransactionReq, err := UnmarshalStopTransactionReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR052: Error unmarshaling StopTransactionReq", err)

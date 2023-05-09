@@ -22,6 +22,7 @@ func WebsocketHandler(ctx *gin.Context, dispatcher Dispatcher) {
 	}
 
 	client := &Client{
+		Header:     ctx.Request.Header,
 		conn:       conn,
 		dispatcher: dispatcher,
 		queue:      make(chan []byte, 256),

@@ -22,24 +22,28 @@ INSERT INTO charge_points (
     modem_imsi,
     meter_serial_number,
     meter_type,
+    status,
+    password,
     created_at,
     updated_at
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-  RETURNING id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+  RETURNING id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at, status, password
 `
 
 type CreateChargePointParams struct {
-	Identity          string         `db:"identity" json:"identity"`
-	Model             string         `db:"model" json:"model"`
-	Vendor            string         `db:"vendor" json:"vendor"`
-	SerialNumber      sql.NullString `db:"serial_number" json:"serialNumber"`
-	FirmwareVerion    sql.NullString `db:"firmware_verion" json:"firmwareVerion"`
-	ModemIccid        sql.NullString `db:"modem_iccid" json:"modemIccid"`
-	ModemImsi         sql.NullString `db:"modem_imsi" json:"modemImsi"`
-	MeterSerialNumber sql.NullString `db:"meter_serial_number" json:"meterSerialNumber"`
-	MeterType         sql.NullString `db:"meter_type" json:"meterType"`
-	CreatedAt         time.Time      `db:"created_at" json:"createdAt"`
-	UpdatedAt         time.Time      `db:"updated_at" json:"updatedAt"`
+	Identity          string            `db:"identity" json:"identity"`
+	Model             string            `db:"model" json:"model"`
+	Vendor            string            `db:"vendor" json:"vendor"`
+	SerialNumber      sql.NullString    `db:"serial_number" json:"serialNumber"`
+	FirmwareVerion    sql.NullString    `db:"firmware_verion" json:"firmwareVerion"`
+	ModemIccid        sql.NullString    `db:"modem_iccid" json:"modemIccid"`
+	ModemImsi         sql.NullString    `db:"modem_imsi" json:"modemImsi"`
+	MeterSerialNumber sql.NullString    `db:"meter_serial_number" json:"meterSerialNumber"`
+	MeterType         sql.NullString    `db:"meter_type" json:"meterType"`
+	Status            ChargePointStatus `db:"status" json:"status"`
+	Password          []byte            `db:"password" json:"password"`
+	CreatedAt         time.Time         `db:"created_at" json:"createdAt"`
+	UpdatedAt         time.Time         `db:"updated_at" json:"updatedAt"`
 }
 
 func (q *Queries) CreateChargePoint(ctx context.Context, arg CreateChargePointParams) (ChargePoint, error) {
@@ -53,6 +57,8 @@ func (q *Queries) CreateChargePoint(ctx context.Context, arg CreateChargePointPa
 		arg.ModemImsi,
 		arg.MeterSerialNumber,
 		arg.MeterType,
+		arg.Status,
+		arg.Password,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -70,12 +76,14 @@ func (q *Queries) CreateChargePoint(ctx context.Context, arg CreateChargePointPa
 		&i.MeterType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Status,
+		&i.Password,
 	)
 	return i, err
 }
 
 const getChargePoint = `-- name: GetChargePoint :one
-SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
+SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at, status, password FROM charge_points
   WHERE id = $1
 `
 
@@ -95,12 +103,14 @@ func (q *Queries) GetChargePoint(ctx context.Context, id int64) (ChargePoint, er
 		&i.MeterType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Status,
+		&i.Password,
 	)
 	return i, err
 }
 
 const getChargePointByIdentity = `-- name: GetChargePointByIdentity :one
-SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
+SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at, status, password FROM charge_points
   WHERE identity = $1
 `
 
@@ -120,12 +130,14 @@ func (q *Queries) GetChargePointByIdentity(ctx context.Context, identity string)
 		&i.MeterType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Status,
+		&i.Password,
 	)
 	return i, err
 }
 
 const listChargePoints = `-- name: ListChargePoints :many
-SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at FROM charge_points
+SELECT id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at, status, password FROM charge_points
   ORDER BY id
 `
 
@@ -151,6 +163,8 @@ func (q *Queries) ListChargePoints(ctx context.Context) ([]ChargePoint, error) {
 			&i.MeterType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Status,
+			&i.Password,
 		); err != nil {
 			return nil, err
 		}
@@ -175,23 +189,27 @@ UPDATE charge_points SET (
     modem_imsi,
     meter_serial_number,
     meter_type,
+    status,
+    password,
     updated_at
-  ) = ($2, $3, $4, $5, $6, $7, $8, $9, $10)
+  ) = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
   WHERE id = $1
-  RETURNING id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at
+  RETURNING id, identity, model, vendor, serial_number, firmware_verion, modem_iccid, modem_imsi, meter_serial_number, meter_type, created_at, updated_at, status, password
 `
 
 type UpdateChargePointParams struct {
-	ID                int64          `db:"id" json:"id"`
-	Model             string         `db:"model" json:"model"`
-	Vendor            string         `db:"vendor" json:"vendor"`
-	SerialNumber      sql.NullString `db:"serial_number" json:"serialNumber"`
-	FirmwareVerion    sql.NullString `db:"firmware_verion" json:"firmwareVerion"`
-	ModemIccid        sql.NullString `db:"modem_iccid" json:"modemIccid"`
-	ModemImsi         sql.NullString `db:"modem_imsi" json:"modemImsi"`
-	MeterSerialNumber sql.NullString `db:"meter_serial_number" json:"meterSerialNumber"`
-	MeterType         sql.NullString `db:"meter_type" json:"meterType"`
-	UpdatedAt         time.Time      `db:"updated_at" json:"updatedAt"`
+	ID                int64             `db:"id" json:"id"`
+	Model             string            `db:"model" json:"model"`
+	Vendor            string            `db:"vendor" json:"vendor"`
+	SerialNumber      sql.NullString    `db:"serial_number" json:"serialNumber"`
+	FirmwareVerion    sql.NullString    `db:"firmware_verion" json:"firmwareVerion"`
+	ModemIccid        sql.NullString    `db:"modem_iccid" json:"modemIccid"`
+	ModemImsi         sql.NullString    `db:"modem_imsi" json:"modemImsi"`
+	MeterSerialNumber sql.NullString    `db:"meter_serial_number" json:"meterSerialNumber"`
+	MeterType         sql.NullString    `db:"meter_type" json:"meterType"`
+	Status            ChargePointStatus `db:"status" json:"status"`
+	Password          []byte            `db:"password" json:"password"`
+	UpdatedAt         time.Time         `db:"updated_at" json:"updatedAt"`
 }
 
 func (q *Queries) UpdateChargePoint(ctx context.Context, arg UpdateChargePointParams) (ChargePoint, error) {
@@ -205,6 +223,8 @@ func (q *Queries) UpdateChargePoint(ctx context.Context, arg UpdateChargePointPa
 		arg.ModemImsi,
 		arg.MeterSerialNumber,
 		arg.MeterType,
+		arg.Status,
+		arg.Password,
 		arg.UpdatedAt,
 	)
 	var i ChargePoint
@@ -221,6 +241,8 @@ func (q *Queries) UpdateChargePoint(ctx context.Context, arg UpdateChargePointPa
 		&i.MeterType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Status,
+		&i.Password,
 	)
 	return i, err
 }

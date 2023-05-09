@@ -115,15 +115,9 @@ func (ns NullChargePointErrorCode) Value() (driver.Value, error) {
 type ChargePointStatus string
 
 const (
-	ChargePointStatusAvailable     ChargePointStatus = "Available"
-	ChargePointStatusPreparing     ChargePointStatus = "Preparing"
-	ChargePointStatusCharging      ChargePointStatus = "Charging"
-	ChargePointStatusSuspendedEVSE ChargePointStatus = "SuspendedEVSE"
-	ChargePointStatusSuspendedEV   ChargePointStatus = "SuspendedEV"
-	ChargePointStatusFinishing     ChargePointStatus = "Finishing"
-	ChargePointStatusReserved      ChargePointStatus = "Reserved"
-	ChargePointStatusUnavailable   ChargePointStatus = "Unavailable"
-	ChargePointStatusFaulted       ChargePointStatus = "Faulted"
+	ChargePointStatusOnline  ChargePointStatus = "Online"
+	ChargePointStatusPending ChargePointStatus = "Pending"
+	ChargePointStatusOffline ChargePointStatus = "Offline"
 )
 
 func (e *ChargePointStatus) Scan(src interface{}) error {
@@ -159,6 +153,55 @@ func (ns NullChargePointStatus) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return string(ns.ChargePointStatus), nil
+}
+
+type ConnectorStatus string
+
+const (
+	ConnectorStatusAvailable     ConnectorStatus = "Available"
+	ConnectorStatusPreparing     ConnectorStatus = "Preparing"
+	ConnectorStatusCharging      ConnectorStatus = "Charging"
+	ConnectorStatusSuspendedEVSE ConnectorStatus = "SuspendedEVSE"
+	ConnectorStatusSuspendedEV   ConnectorStatus = "SuspendedEV"
+	ConnectorStatusFinishing     ConnectorStatus = "Finishing"
+	ConnectorStatusReserved      ConnectorStatus = "Reserved"
+	ConnectorStatusUnavailable   ConnectorStatus = "Unavailable"
+	ConnectorStatusFaulted       ConnectorStatus = "Faulted"
+)
+
+func (e *ConnectorStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ConnectorStatus(s)
+	case string:
+		*e = ConnectorStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ConnectorStatus: %T", src)
+	}
+	return nil
+}
+
+type NullConnectorStatus struct {
+	ConnectorStatus ConnectorStatus
+	Valid           bool // Valid is true if ConnectorStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullConnectorStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.ConnectorStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ConnectorStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullConnectorStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ConnectorStatus), nil
 }
 
 type MeterLocation string
@@ -606,18 +649,20 @@ func (ns NullTransactionStopReason) Value() (driver.Value, error) {
 }
 
 type ChargePoint struct {
-	ID                int64          `db:"id" json:"id"`
-	Identity          string         `db:"identity" json:"identity"`
-	Model             string         `db:"model" json:"model"`
-	Vendor            string         `db:"vendor" json:"vendor"`
-	SerialNumber      sql.NullString `db:"serial_number" json:"serialNumber"`
-	FirmwareVerion    sql.NullString `db:"firmware_verion" json:"firmwareVerion"`
-	ModemIccid        sql.NullString `db:"modem_iccid" json:"modemIccid"`
-	ModemImsi         sql.NullString `db:"modem_imsi" json:"modemImsi"`
-	MeterSerialNumber sql.NullString `db:"meter_serial_number" json:"meterSerialNumber"`
-	MeterType         sql.NullString `db:"meter_type" json:"meterType"`
-	CreatedAt         time.Time      `db:"created_at" json:"createdAt"`
-	UpdatedAt         time.Time      `db:"updated_at" json:"updatedAt"`
+	ID                int64             `db:"id" json:"id"`
+	Identity          string            `db:"identity" json:"identity"`
+	Model             string            `db:"model" json:"model"`
+	Vendor            string            `db:"vendor" json:"vendor"`
+	SerialNumber      sql.NullString    `db:"serial_number" json:"serialNumber"`
+	FirmwareVerion    sql.NullString    `db:"firmware_verion" json:"firmwareVerion"`
+	ModemIccid        sql.NullString    `db:"modem_iccid" json:"modemIccid"`
+	ModemImsi         sql.NullString    `db:"modem_imsi" json:"modemImsi"`
+	MeterSerialNumber sql.NullString    `db:"meter_serial_number" json:"meterSerialNumber"`
+	MeterType         sql.NullString    `db:"meter_type" json:"meterType"`
+	CreatedAt         time.Time         `db:"created_at" json:"createdAt"`
+	UpdatedAt         time.Time         `db:"updated_at" json:"updatedAt"`
+	Status            ChargePointStatus `db:"status" json:"status"`
+	Password          []byte            `db:"password" json:"password"`
 }
 
 type Configuration struct {
@@ -635,7 +680,7 @@ type Connector struct {
 	ConnectorID     int32                `db:"connector_id" json:"connectorID"`
 	ChargePointID   int64                `db:"charge_point_id" json:"chargePointID"`
 	ErrorCode       ChargePointErrorCode `db:"error_code" json:"errorCode"`
-	Status          ChargePointStatus    `db:"status" json:"status"`
+	Status          ConnectorStatus      `db:"status" json:"status"`
 	Info            sql.NullString       `db:"info" json:"info"`
 	VendorID        sql.NullString       `db:"vendor_id" json:"vendorID"`
 	VendorErrorCode sql.NullString       `db:"vendor_error_code" json:"vendorErrorCode"`

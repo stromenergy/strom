@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Diagnostic) DiagnosticsStatusNotificationReq(client *ws.Client, message types.Message) {
-	_, err := unmarshalDiagnosticsStatusNotificationReq(message.Payload)
+	_, err := UnmarshalDiagnosticsStatusNotificationReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR058: Error unmarshaling DiagnosticsStatusNotificationReq", err)

@@ -30,7 +30,7 @@ type CreateConnectorParams struct {
 	ConnectorID     int32                `db:"connector_id" json:"connectorID"`
 	ChargePointID   int64                `db:"charge_point_id" json:"chargePointID"`
 	ErrorCode       ChargePointErrorCode `db:"error_code" json:"errorCode"`
-	Status          ChargePointStatus    `db:"status" json:"status"`
+	Status          ConnectorStatus      `db:"status" json:"status"`
 	Info            sql.NullString       `db:"info" json:"info"`
 	VendorID        sql.NullString       `db:"vendor_id" json:"vendorID"`
 	VendorErrorCode sql.NullString       `db:"vendor_error_code" json:"vendorErrorCode"`
@@ -173,7 +173,7 @@ UPDATE connectors SET (
 type UpdateConnectorParams struct {
 	ID              int64                `db:"id" json:"id"`
 	ErrorCode       ChargePointErrorCode `db:"error_code" json:"errorCode"`
-	Status          ChargePointStatus    `db:"status" json:"status"`
+	Status          ConnectorStatus      `db:"status" json:"status"`
 	Info            sql.NullString       `db:"info" json:"info"`
 	VendorID        sql.NullString       `db:"vendor_id" json:"vendorID"`
 	VendorErrorCode sql.NullString       `db:"vendor_error_code" json:"vendorErrorCode"`

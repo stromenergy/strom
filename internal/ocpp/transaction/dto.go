@@ -22,7 +22,7 @@ type RemoteStartTransactionConf struct {
 	Status types.RemoteStartStopStatus `json:"status"`
 }
 
-func unmarshalRemoteStartTranformationConf(payload interface{}) (*RemoteStartTransactionReq, error) {
+func UnmarshalRemoteStartTranformationConf(payload interface{}) (*RemoteStartTransactionReq, error) {
 	remoteStartTransactionReq := &RemoteStartTransactionReq{}
 
 	switch typedPayload := payload.(type) {
@@ -45,7 +45,7 @@ type RemoteStopTransactionConf struct {
 	Status types.RemoteStartStopStatus `json:"status"`
 }
 
-func unmarshalRemoteStopTranformationConf(payload interface{}) (*RemoteStopTransactionReq, error) {
+func UnmarshalRemoteStopTranformationConf(payload interface{}) (*RemoteStopTransactionReq, error) {
 	remoteStopTransactionReq := &RemoteStopTransactionReq{}
 
 	switch typedPayload := payload.(type) {
@@ -73,7 +73,7 @@ type StartTransactionConf struct {
 	TransactionID int64                   `json:"transactionId"`
 }
 
-func unmarshalStartTransactionReq(payload interface{}) (*StartTransactionReq, error) {
+func UnmarshalStartTransactionReq(payload interface{}) (*StartTransactionReq, error) {
 	startTransactionReq := &StartTransactionReq{}
 
 	switch typedPayload := payload.(type) {
@@ -101,7 +101,7 @@ type StopTransactionConf struct {
 	IDTagInfo *authorization.IDTagInfo `json:"idTagInfo,omitempty"`
 }
 
-func unmarshalStopTransactionReq(payload interface{}) (*StopTransactionReq, error) {
+func UnmarshalStopTransactionReq(payload interface{}) (*StopTransactionReq, error) {
 	stopTransactionReq := &StopTransactionReq{}
 
 	switch typedPayload := payload.(type) {

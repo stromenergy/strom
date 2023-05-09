@@ -3,6 +3,7 @@ package ws
 import (
 	"bytes"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -23,13 +24,18 @@ var (
 
 type Client struct {
 	ID         string
+	Header     http.Header
 	conn       *websocket.Conn
 	dispatcher Dispatcher
 	queue      chan []byte
+	shutdown   bool
 }
 
 func (c *Client) CloseQueue() {
-	close(c.queue)
+	if !c.shutdown {
+		c.shutdown = true
+		close(c.queue)
+	}
 }
 
 func (c *Client) Send(message []byte) {

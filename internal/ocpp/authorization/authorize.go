@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Authorization) AuthorizeReq(client *ws.Client, message types.Message) {
-	authorizeReq, err := unmarshalAuthorizeReq(message.Payload)
+	authorizeReq, err := UnmarshalAuthorizeReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR055: Error unmarshaling AuthorizeReq", err)

@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Firmware) FirmwareStatusNotificationReq(client *ws.Client, message types.Message) {
-	_, err := unmarshalFirmwareStatusNotificationReq(message.Payload)
+	_, err := UnmarshalFirmwareStatusNotificationReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR060: Error unmarshaling FirmwareStatusNotificationReq", err)

@@ -9,14 +9,14 @@ import (
 
 type TriggerMessageReq struct {
 	MessageTrigger types.MessageTrigger `json:"messageTrigger"`
-	ConnectorID    *int32                 `json:"connectorId,omitempty"`
+	ConnectorID    *int32               `json:"connectorId,omitempty"`
 }
 
 type TriggerMessageConf struct {
 	Status types.TriggerMessageStatus `json:"status"`
 }
 
-func unmarshalTriggerMessageConf(payload interface{}) (*TriggerMessageConf, error) {
+func UnmarshalTriggerMessageConf(payload interface{}) (*TriggerMessageConf, error) {
 	triggerMessageConf := &TriggerMessageConf{}
 
 	switch typedPayload := payload.(type) {

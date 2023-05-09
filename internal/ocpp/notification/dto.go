@@ -26,7 +26,7 @@ type BootNotificationConf struct {
 	Status      types.RegistrationStatus `json:"status"`
 }
 
-func unmarshalBootNotificationReq(payload interface{}) (*BootNotificationReq, error) {
+func UnmarshalBootNotificationReq(payload interface{}) (*BootNotificationReq, error) {
 	bootNotificationReq := &BootNotificationReq{}
 
 	switch typedPayload := payload.(type) {
@@ -44,7 +44,7 @@ func unmarshalBootNotificationReq(payload interface{}) (*BootNotificationReq, er
 type StatusNotificationReq struct {
 	ConnectorID     int32                   `json:"connectorId"`
 	ErrorCode       db.ChargePointErrorCode `json:"errorCode"`
-	Status          db.ChargePointStatus    `json:"status"`
+	Status          db.ConnectorStatus      `json:"status"`
 	Info            *string                 `json:"info,omitempty"`
 	Timestamp       *types.OcppTime         `json:"timestamp,omitempty"`
 	VendorID        *string                 `json:"vendorId,omitempty"`
@@ -53,7 +53,7 @@ type StatusNotificationReq struct {
 
 type StatusNotificationConf struct{}
 
-func unmarshalStatusNotificationReq(payload interface{}) (*StatusNotificationReq, error) {
+func UnmarshalStatusNotificationReq(payload interface{}) (*StatusNotificationReq, error) {
 	statusNotificationReq := &StatusNotificationReq{}
 
 	switch typedPayload := payload.(type) {

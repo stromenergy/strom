@@ -9,14 +9,14 @@ import (
 )
 
 type CancelReservationReq struct {
-	ReservationID int64          `json:"reservationID"`
+	ReservationID int64 `json:"reservationID"`
 }
 
 type CancelReservationConf struct {
 	Status types.CancelReservationStatus `json:"status"`
 }
 
-func unmarshalCancelReservationConf(payload interface{}) (*CancelReservationConf, error) {
+func UnmarshalCancelReservationConf(payload interface{}) (*CancelReservationConf, error) {
 	cancelReservationConf := &CancelReservationConf{}
 
 	switch typedPayload := payload.(type) {
@@ -43,7 +43,7 @@ type ReserveNowConf struct {
 	Status db.ReservationStatus `json:"status"`
 }
 
-func unmarshalReserveNowConf(payload interface{}) (*ReserveNowConf, error) {
+func UnmarshalReserveNowConf(payload interface{}) (*ReserveNowConf, error) {
 	reserveNowConf := &ReserveNowConf{}
 
 	switch typedPayload := payload.(type) {

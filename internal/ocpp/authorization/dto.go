@@ -22,7 +22,7 @@ type AuthorizeConf struct {
 	IDTagInfo IDTagInfo `json:"idTagInfo"`
 }
 
-func unmarshalAuthorizeReq(payload interface{}) (*AuthorizeReq, error) {
+func UnmarshalAuthorizeReq(payload interface{}) (*AuthorizeReq, error) {
 	authorizeReq := &AuthorizeReq{}
 
 	switch typedPayload := payload.(type) {

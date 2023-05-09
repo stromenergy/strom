@@ -9,7 +9,7 @@ import (
 )
 
 func (s *MeterValue) MeterValueReq(client *ws.Client, message types.Message) {
-	meterValueReq, err := unmarshalMeterValueReq(message.Payload)
+	meterValueReq, err := UnmarshalMeterValueReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR049: Error unmarshaling MeterValueReq", err)

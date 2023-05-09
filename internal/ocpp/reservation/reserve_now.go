@@ -49,7 +49,6 @@ func (s *Reservation) SendReserveNowReq(client *ws.Client, connectorId int32, ex
 	uniqueID, confChannel, err := s.call.Send(client, types.CallActionReserveNow, reserveNowReq)
 
 	if err != nil {
-		s.call.Remove(uniqueID)
 		return "", nil, err
 	}
 
@@ -75,7 +74,7 @@ func (s *Reservation) waitForReserveNowConf(client *ws.Client, reservation db.Re
 	case types.MessageTypeCallError:
 		updateReservationParams.Status = db.ReservationStatusRejected
 	case types.MessageTypeCallResult:
-		reserveNowConf, err := unmarshalReserveNowConf(message.Payload)
+		reserveNowConf, err := UnmarshalReserveNowConf(message.Payload)
 
 		if err != nil {
 			util.LogError("STR042: Error unmarshaling ReserveNowConf", err)

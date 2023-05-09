@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Transaction) StartTransactionReq(client *ws.Client, message types.Message) {
-	startTransactionReq, err := unmarshalStartTransactionReq(message.Payload)
+	startTransactionReq, err := UnmarshalStartTransactionReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR046: Error unmarshaling StartTransactionReq", err)

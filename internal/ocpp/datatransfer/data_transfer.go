@@ -9,7 +9,7 @@ import (
 )
 
 func (s *DataTransfer) DataTransferReq(client *ws.Client, message types.Message) {
-	dataTransferReq, err := unmarshalDataTransferReq(message.Payload)
+	dataTransferReq, err := UnmarshalDataTransferReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR056: Error unmarshaling DataTransferReq", err)

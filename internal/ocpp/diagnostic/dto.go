@@ -13,7 +13,7 @@ type DiagnosticsStatusNotificationReq struct {
 
 type DiagnosticsStatusNotificationConf struct{}
 
-func unmarshalDiagnosticsStatusNotificationReq(payload interface{}) (*DiagnosticsStatusNotificationReq, error) {
+func UnmarshalDiagnosticsStatusNotificationReq(payload interface{}) (*DiagnosticsStatusNotificationReq, error) {
 	diagnosticsStatusNotificationReq := &DiagnosticsStatusNotificationReq{}
 
 	switch typedPayload := payload.(type) {

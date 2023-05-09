@@ -31,7 +31,7 @@ type MeterValueReq struct {
 
 type MeterValueConf struct{}
 
-func unmarshalMeterValueReq(payload interface{}) (*MeterValueReq, error) {
+func UnmarshalMeterValueReq(payload interface{}) (*MeterValueReq, error) {
 	meterValueReq := &MeterValueReq{}
 
 	switch typedPayload := payload.(type) {

@@ -28,7 +28,6 @@ func (s *Reservation) SendCancelReservationReq(client *ws.Client, reservationID 
 	uniqueID, confChannel, err := s.call.Send(client, types.CallActionCancelReservation, cancelReservationReq)
 
 	if err != nil {
-		s.call.Remove(uniqueID)
 		return "", nil, err
 	}
 
@@ -51,7 +50,7 @@ func (s *Reservation) waitForCancelReservationConf(client *ws.Client, reservatio
 	updateReservationParams := param.NewUpdateReservationParams(reservation)
 
 	if message.MessageType == types.MessageTypeCallResult {
-		cancelReservationConf, err := unmarshalCancelReservationConf(message.Payload)
+		cancelReservationConf, err := UnmarshalCancelReservationConf(message.Payload)
 
 		if err != nil {
 			util.LogError("STR064: Error unmarshaling CancelReservationConf", err)

@@ -1,11 +1,15 @@
 package ocpp
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	"github.com/stromenergy/strom/internal/db"
+	"github.com/stromenergy/strom/internal/db/param"
+	"github.com/stromenergy/strom/internal/util"
 	"github.com/stromenergy/strom/internal/ws"
 )
 
@@ -56,6 +60,17 @@ func (s *Ocpp) dispatch() {
 }
 
 func (s *Ocpp) remove(client *ws.Client) {
+	ctx := context.Background()
+
+	if chargePoint, err := s.repository.GetChargePointByIdentity(ctx, client.ID); err == nil && chargePoint.Status == db.ChargePointStatusOnline {
+		updateChargePointParams := param.NewUpdateChargePointParams(chargePoint)
+		updateChargePointParams.Status = db.ChargePointStatusOffline
+
+		if _, err := s.repository.UpdateChargePoint(ctx, updateChargePointParams); err != nil {
+			util.LogError("STR086: Error updating charge point", err)
+		}
+	}
+
 	delete(s.clients, client)
 	client.CloseQueue()
 }

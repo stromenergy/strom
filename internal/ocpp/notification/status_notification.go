@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Notification) StatusNotificationReq(client *ws.Client, message types.Message) {
-	statusNotificationReq, err := unmarshalStatusNotificationReq(message.Payload)
+	statusNotificationReq, err := UnmarshalStatusNotificationReq(message.Payload)
 
 	if err != nil {
 		util.LogError("STR036: Error unmarshaling StatusNotificationReq", err)
@@ -42,7 +42,7 @@ func (s *Notification) StatusNotificationReq(client *ws.Client, message types.Me
 		// Update existing connector
 		updateConnectorParams := param.NewUpdateConnectorParams(connector)
 		updateConnectorParams.ErrorCode = db.ChargePointErrorCode(statusNotificationReq.ErrorCode)
-		updateConnectorParams.Status = db.ChargePointStatus(statusNotificationReq.Status)
+		updateConnectorParams.Status = db.ConnectorStatus(statusNotificationReq.Status)
 		updateConnectorParams.Info = util.SqlNullString(statusNotificationReq.Info)
 		updateConnectorParams.VendorID = util.SqlNullString(statusNotificationReq.VendorID)
 		updateConnectorParams.VendorErrorCode = util.SqlNullString(statusNotificationReq.VendorErrorCode)

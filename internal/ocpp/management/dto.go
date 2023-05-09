@@ -16,7 +16,7 @@ type ChangeAvailabilityConf struct {
 	Status types.AvailabilityStatus `json:"status"`
 }
 
-func unmarshalChangeAvailabilityConf(payload interface{}) (*ChangeAvailabilityConf, error) {
+func UnmarshalChangeAvailabilityConf(payload interface{}) (*ChangeAvailabilityConf, error) {
 	chargeAvailabilityConf := &ChangeAvailabilityConf{}
 
 	switch typedPayload := payload.(type) {
@@ -40,7 +40,7 @@ type ChangeConfigurationConf struct {
 	Status types.ConfigurationStatus `json:"status"`
 }
 
-func unmarshalChangeConfigurationConf(payload interface{}) (*ChangeConfigurationConf, error) {
+func UnmarshalChangeConfigurationConf(payload interface{}) (*ChangeConfigurationConf, error) {
 	changeConfigurationConf := &ChangeConfigurationConf{}
 
 	switch typedPayload := payload.(type) {
@@ -61,7 +61,7 @@ type ClearCacheConf struct {
 	Status types.ClearCacheStatus `json:"status"`
 }
 
-func unmarshalClearCacheReq(payload interface{}) (*ClearCacheReq, error) {
+func UnmarshalClearCacheReq(payload interface{}) (*ClearCacheReq, error) {
 	clearCacheReq := &ClearCacheReq{}
 
 	switch typedPayload := payload.(type) {
@@ -91,7 +91,7 @@ type GetConfigurationConf struct {
 	UnknownKey       *[]string   `json:"unknownKey,omitempty"`
 }
 
-func unmarshalGetConfigurationConf(payload interface{}) (*GetConfigurationConf, error) {
+func UnmarshalGetConfigurationConf(payload interface{}) (*GetConfigurationConf, error) {
 	getConfigurationConf := &GetConfigurationConf{}
 
 	switch typedPayload := payload.(type) {
@@ -114,7 +114,7 @@ type ResetConf struct {
 	Status types.ResetStatus `json:"status"`
 }
 
-func unmarshalResetReq(payload interface{}) (*ResetReq, error) {
+func UnmarshalResetReq(payload interface{}) (*ResetReq, error) {
 	resetReq := &ResetReq{}
 
 	switch typedPayload := payload.(type) {
@@ -137,7 +137,7 @@ type UnlockConnectorConf struct {
 	Status types.UnlockStatus `json:"status"`
 }
 
-func unmarshalUnlockConnectorConf(payload interface{}) (*UnlockConnectorConf, error) {
+func UnmarshalUnlockConnectorConf(payload interface{}) (*UnlockConnectorConf, error) {
 	unlockConnectorConf := &UnlockConnectorConf{}
 
 	switch typedPayload := payload.(type) {

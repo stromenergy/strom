@@ -13,7 +13,12 @@ func (s *Call) Send(client *ws.Client, action types.CallAction, payload interfac
 	message := types.NewMessageCall(uniqueID, action, payload)
 	err := message.Send(client)
 
-	return uniqueID, s.channels[uniqueID], err
+	if err != nil {
+		s.Remove(uniqueID)
+		return "", nil, err
+	}
+
+	return uniqueID, s.channels[uniqueID], nil
 }
 
 func (s *Call) getUniqueID() string {

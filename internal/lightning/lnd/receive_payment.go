@@ -82,7 +82,7 @@ waitLoop:
 		lnrpcInvoice, err := client.Recv()
 
 		if err != nil {
-			util.LogError("STR0879: Error receiving invoice update", err)
+			util.LogError("STR085: Error receiving invoice update", err)
 			payment.Pending = false
 
 			break waitLoop

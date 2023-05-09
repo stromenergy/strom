@@ -9,9 +9,11 @@ INSERT INTO charge_points (
     modem_imsi,
     meter_serial_number,
     meter_type,
+    status,
+    password,
     created_at,
     updated_at
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
   RETURNING *;
 
 -- name: GetChargePoint :one
@@ -36,7 +38,9 @@ UPDATE charge_points SET (
     modem_imsi,
     meter_serial_number,
     meter_type,
+    status,
+    password,
     updated_at
-  ) = ($2, $3, $4, $5, $6, $7, $8, $9, $10)
+  ) = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
   WHERE id = $1
   RETURNING *;

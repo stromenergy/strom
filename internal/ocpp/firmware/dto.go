@@ -13,7 +13,7 @@ type FirmwareStatusNotificationReq struct {
 
 type FirmwareStatusNotificationConf struct{}
 
-func unmarshalFirmwareStatusNotificationReq(payload interface{}) (*FirmwareStatusNotificationReq, error) {
+func UnmarshalFirmwareStatusNotificationReq(payload interface{}) (*FirmwareStatusNotificationReq, error) {
 	firmwareStatusNotificationReq := &FirmwareStatusNotificationReq{}
 
 	switch typedPayload := payload.(type) {

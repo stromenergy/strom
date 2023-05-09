@@ -17,6 +17,8 @@ func NewUpdateChargePointParams(chargePoint db.ChargePoint) db.UpdateChargePoint
 		ModemImsi:         chargePoint.ModemImsi,
 		MeterSerialNumber: chargePoint.MeterSerialNumber,
 		MeterType:         chargePoint.MeterType,
+		Status:            chargePoint.Status,
+		Password:          chargePoint.Password,
 		UpdatedAt:         time.Now(),
 	}
 }

@@ -21,39 +21,42 @@ func (s *Management) SendChangeConfigurationReq(client *ws.Client, key, value st
 		return "", nil, errors.New("Charge point not found")
 	}
 
-	getConfigurationByKeyParams := db.GetConfigurationByKeyParams{
-		ChargePointID: chargePoint.ID,
-		Key: key,
-	}
-
-	configuration, err := s.repository.GetConfigurationByKey(ctx, getConfigurationByKeyParams)
-
-	if err != nil {
-		util.LogError("STR068: Configuration not found", err)
-		return "", nil, errors.New("Configuration not found")
-	}
-
 	changeConfigurationReq := ChangeConfigurationReq{
-		Key: key,
+		Key:   key,
 		Value: value,
 	}
 
-	uniqueID, confChannel, err := s.call.Send(client, types.CallActionChangeConfiguration, changeConfigurationReq)
+	if key == "AuthorizationKey" {
+		return s.call.Send(client, types.CallActionChangeConfiguration, changeConfigurationReq)
+	} else {
+		getConfigurationByKeyParams := db.GetConfigurationByKeyParams{
+			ChargePointID: chargePoint.ID,
+			Key:           key,
+		}
 
-	if err != nil {
-		s.call.Remove(uniqueID)
-		return "", nil, err
+		configuration, err := s.repository.GetConfigurationByKey(ctx, getConfigurationByKeyParams)
+
+		if err != nil {
+			util.LogError("STR068: Configuration not found", err)
+			return "", nil, errors.New("Configuration not found")
+		}
+
+		uniqueID, confChannel, err := s.call.Send(client, types.CallActionChangeConfiguration, changeConfigurationReq)
+
+		if err != nil {
+			return "", nil, err
+		}
+
+		// Wait for the channel to produce a response
+		reqChan := make(chan types.Message)
+
+		go s.waitForChangeConfigurationConf(client, configuration, value, confChannel, reqChan)
+
+		return uniqueID, reqChan, nil
 	}
-
-	// Wait for the channel to produce a response
-	reqChan := make(chan types.Message)
-
-	go s.waitForChangeConfigurationConf(client, configuration, uniqueID, confChannel, reqChan)
-
-	return uniqueID, reqChan, nil
 }
 
-func (s *Management) waitForChangeConfigurationConf(client *ws.Client, configuration db.Configuration, uniqueID string, confChannel <-chan types.Message, reqChannel chan<- types.Message) {
+func (s *Management) waitForChangeConfigurationConf(client *ws.Client, configuration db.Configuration, value string, confChannel <-chan types.Message, reqChannel chan<- types.Message) {
 	message := <-confChannel
 
 	// Forward message to requestor
@@ -63,7 +66,7 @@ func (s *Management) waitForChangeConfigurationConf(client *ws.Client, configura
 	ctx := context.Background()
 
 	if message.MessageType == types.MessageTypeCallResult {
-		changeConfigurationConf, err := unmarshalChangeConfigurationConf(message.Payload)
+		changeConfigurationConf, err := UnmarshalChangeConfigurationConf(message.Payload)
 
 		if err != nil {
 			util.LogError("STR069: Error unmarshaling ChangeConfigurationConf", err)
@@ -73,6 +76,7 @@ func (s *Management) waitForChangeConfigurationConf(client *ws.Client, configura
 		if changeConfigurationConf.Status == types.ConfigurationStatusAccepted || changeConfigurationConf.Status == types.ConfigurationStatusRebootRequired {
 			// TODO: Handle reboot
 			updateConfigurationParams := param.NewUpdateConfigurationParams(configuration)
+			updateConfigurationParams.Value = util.SqlNullString(value)
 
 			if _, err := s.repository.UpdateConfiguration(ctx, updateConfigurationParams); err != nil {
 				util.LogError("STR070: Error updating configuration", err)

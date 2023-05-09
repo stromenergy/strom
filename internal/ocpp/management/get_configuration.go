@@ -30,7 +30,6 @@ func (s *Management) SendGetConfigurationReq(client *ws.Client, keys *[]string) 
 
 
 	if err != nil {
-		s.call.Remove(uniqueID)
 		return "", nil, err
 	}
 
@@ -52,7 +51,7 @@ func (s *Management) waitForGetConfigurationConf(client *ws.Client, chargePoint 
 	ctx := context.Background()
 
 	if message.MessageType == types.MessageTypeCallResult {
-		getConfigurationConf, err := unmarshalGetConfigurationConf(message.Payload)
+		getConfigurationConf, err := UnmarshalGetConfigurationConf(message.Payload)
 
 		if err != nil {
 			util.LogError("STR065: Error unmarshaling GetConfigurationConf", err)

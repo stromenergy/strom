@@ -18,7 +18,7 @@ type DataTransferConf struct {
 	Data   *string                  `json:"data,omitempty"`
 }
 
-func unmarshalDataTransferReq(payload interface{}) (*DataTransferReq, error) {
+func UnmarshalDataTransferReq(payload interface{}) (*DataTransferReq, error) {
 	dataTransferReq := &DataTransferReq{}
 
 	switch typedPayload := payload.(type) {
@@ -33,7 +33,7 @@ func unmarshalDataTransferReq(payload interface{}) (*DataTransferReq, error) {
 	return dataTransferReq, nil
 }
 
-func unmarshalDataTransferConf(payload interface{}) (*DataTransferConf, error) {
+func UnmarshalDataTransferConf(payload interface{}) (*DataTransferConf, error) {
 	dataTransferConf := &DataTransferConf{}
 
 	switch typedPayload := payload.(type) {
