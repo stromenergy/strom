@@ -62,6 +62,7 @@ Strom could also be extended to support [OCPI](https://github.com/ocpi/ocpi) (Op
 - [x] OCPP 1.6 core
 - [x] Lightning interface
 - [x] LND lightning implementation
+- [x] Basic TLS
 - [ ] Basic Admin UI
 - [ ] REST API
 - [ ] Static tariff management
@@ -73,6 +74,8 @@ Strom could also be extended to support [OCPI](https://github.com/ocpi/ocpi) (Op
 - [ ] Second Lightning backend
 - [ ] Websocket UI
 - [ ] Dynamic tariff management
+- [ ] Managed TLS (Let's Encrypt)
 - [ ] OCPI extension
 - [ ] OCPP 1.6 submodules
+- [ ] OCPP 2.0.1 core
 - [ ] OCPP passthrough

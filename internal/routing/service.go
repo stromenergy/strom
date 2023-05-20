@@ -15,7 +15,7 @@ import (
 )
 
 type RoutingInterface interface {
-	Start(port string, shutdownCtx context.Context, waitGroup *sync.WaitGroup)
+	Start(port string, tlsCertificateFile, tlsPrivateKeyFile *string, shutdownCtx context.Context, waitGroup *sync.WaitGroup)
 }
 
 type Routing struct {
@@ -33,16 +33,16 @@ func NewService(repository *db.Repository, services service.ServiceInterface) Ro
 	}
 }
 
-func (s *Routing) Start(port string, shutdownCtx context.Context, waitGroup *sync.WaitGroup) {
+func (s *Routing) Start(port string, tlsCertificateFile, tlsPrivateKeyFile *string, shutdownCtx context.Context, waitGroup *sync.WaitGroup) {
 	s.shutdownCtx = shutdownCtx
 	s.waitGroup = waitGroup
 	waitGroup.Add(1)
 
-	go s.listenAndServe(port)
+	go s.listenAndServe(port, tlsCertificateFile, tlsPrivateKeyFile)
 	go s.waitForShutdown()
 }
 
-func (s *Routing) listenAndServe(port string) {
+func (s *Routing) listenAndServe(port string, tlsCertificateFile, tlsPrivateKeyFile *string) {
 	engine := gin.Default()
 
 	s.mountRoutes(engine)
@@ -53,7 +53,13 @@ func (s *Routing) listenAndServe(port string) {
 		Handler: engine,
 	}
 
-	err := s.server.ListenAndServe()
+	var err error
+
+	if tlsCertificateFile != nil && tlsPrivateKeyFile != nil {
+		err = s.server.ListenAndServeTLS(*tlsCertificateFile, *tlsPrivateKeyFile)
+	} else {
+		err = s.server.ListenAndServe()
+	}
 
 	if err != nil && err != http.ErrServerClosed {
 		util.LogError("STR018: Shutting down Rest service", err)

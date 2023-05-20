@@ -47,6 +47,18 @@ func main() {
 			Value:    "6102",
 			Usage:    "Port of the API",
 		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "application",
+			EnvVars:  []string{"TLS_CERTIFICATE_FILE"},
+			Name:     "strom.tls-certificate-file",
+			Usage:    "TLS certificate file path",
+		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Category: "application",
+			EnvVars:  []string{"TLS_PRIVATE_KEY_FILE"},
+			Name:     "strom.tls-private-key-file",
+			Usage:    "TLS private key file path",
+		}),
 		// Database
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Category: "database",
@@ -177,6 +189,9 @@ func main() {
 			util.OnErrorPanic(err)
 
 			// Initialize services
+			tlsCertificateFile := util.NilString(ctx.String("strom.tls-certificate-file"))
+			tlsPrivateKeyFile := util.NilString(ctx.String("strom.tls-private-key-file"))
+
 			shutdownCtx, cancelFunc := context.WithCancel(context.Background())
 			waitGroup := &sync.WaitGroup{}
 
@@ -184,7 +199,7 @@ func main() {
 			services.Start(shutdownCtx, waitGroup)
 
 			routingService := routing.NewService(repository, services)
-			routingService.Start(ctx.String("strom.port"), shutdownCtx, waitGroup)
+			routingService.Start(ctx.String("strom.port"), tlsCertificateFile, tlsPrivateKeyFile, shutdownCtx, waitGroup)
 
 			// Handle shutdown
 			sigtermChan := make(chan os.Signal, 1)
